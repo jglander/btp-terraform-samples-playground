@@ -4,6 +4,10 @@ terraform {
       source  = "SAP/btp"
       version = "1.5.0"
     }
+    cloudfoundry = {
+      source  = "SAP/cloudfoundry"
+      version = "1.0.0-rc1"
+    }
   }
 }
 
@@ -13,15 +17,6 @@ terraform {
 provider "btp" {
   cli_server_url = var.cli_server_url
   globalaccount  = var.globalaccount
-}
-
-terraform {
-  required_providers {
-    cloudfoundry = {
-      source  = "SAP/cloudfoundry"
-      version = "1.0.0-rc1"
-    }
-  }
 }
 
 ######################################################################

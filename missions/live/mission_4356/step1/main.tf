@@ -92,11 +92,12 @@ resource "btp_subaccount_entitlement" "genentitlements" {
 # ------------------------------------------------------------------------------------------------------
 # Create app subscription to SAP Integration Suite
 # ------------------------------------------------------------------------------------------------------
+
 resource "btp_subaccount_entitlement" "sap_integration_suite" {
   subaccount_id = data.btp_subaccount.dc_mission.id
   service_name  = local.service_name__sap_integration_suite
   plan_name     = var.service_plan__sap_integration_suite
-  amount        = 1
+  #amount        = 1
 }
 
 data "btp_subaccount_subscriptions" "all" {
@@ -126,6 +127,7 @@ resource "btp_subaccount_role_collection_assignment" "int_prov" {
 # ------------------------------------------------------------------------------------------------------
 # Create app subscription to SAP Business Application Studio
 # ------------------------------------------------------------------------------------------------------
+
 resource "btp_subaccount_entitlement" "bas" {
   subaccount_id = data.btp_subaccount.dc_mission.id
   service_name  = local.service__sap_business_app_studio
