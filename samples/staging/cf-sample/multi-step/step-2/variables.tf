@@ -1,3 +1,14 @@
+variable "globalaccount" {
+  type        = string
+  description = "The globalaccount subdomain where the sub account shall be created."
+}
+ 
+variable "cli_server_url" {
+  type        = string
+  description = "The BTP CLI server URL."
+  default     = "https://cpcli.cf.eu10.hana.ondemand.com"
+}
+
 variable "custom_idp_origin" {
     type = string
 }
