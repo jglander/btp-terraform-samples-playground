@@ -28,14 +28,22 @@ resource "btp_subaccount" "dc_mission" {
 # Entitle 
 resource "btp_subaccount_entitlement" "datasphere" {
   subaccount_id = btp_subaccount.dc_mission.id
-  service_name  = "data-analytics-osb"
-  plan_name     = "standard"
+  # live
+  #service_name  = "data-analytics-osb"
+  #plan_name     = "standard"
+  # canary
+  service_name  = "data-analytics-service-orcarel-osb"
+  plan_name     = "free"
 }
 # Get serviceplan_id for data-analytics-osb with plan_name "standard"
 data "btp_subaccount_service_plan" "datasphere" {
   subaccount_id = btp_subaccount.dc_mission.id
-  offering_name = "data-analytics-osb"
-  name          = "standard"
+  # live
+  #offering_name = "data-analytics-osb"
+  #name          = "standard"
+  # canary
+  offering_name = "data-analytics-service-orcarel-osb"
+  name          = "free"
   depends_on    = [btp_subaccount_entitlement.datasphere]
 }
 
