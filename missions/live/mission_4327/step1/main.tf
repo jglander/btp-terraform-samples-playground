@@ -16,7 +16,7 @@ resource "btp_subaccount" "project" {
   name      = var.subaccount_name
   subdomain = local.subaccount_domain
   #region    = lower(var.region)
-  region    = "us-10" // pin region, temporary "solution" as long as NGPBUG-398911 is not resolved
+  region    = "us10" // pin region, temporary "solution" as long as NGPBUG-398911 is not resolved
 }
 data "btp_whoami" "me" {}
 
