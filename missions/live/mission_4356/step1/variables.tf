@@ -99,7 +99,7 @@ variable "subaccount_service_admins" {
 variable "service_plan__sap_integration_suite" {
   type        = string
   description = "The plan for SAP Integration Suite"
-  default     = "free"
+  default     = "enterprise_agreement"
   validation {
     condition     = contains(["free", "enterprise_agreement"], var.service_plan__sap_integration_suite)
     error_message = "Invalid value for service_plan__sap_integration_suite. Only 'free' and 'enterprise_agreement' are allowed."
