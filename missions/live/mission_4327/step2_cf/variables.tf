@@ -1,3 +1,15 @@
+variable "globalaccount" {
+  type        = string
+  description = "Defines the global account"
+  default     = "yourglobalaccount"
+}
+
+variable "cli_server_url" {
+  type        = string
+  description = "Defines the CLI server URL"
+  default     = "https://cli.btp.cloud.sap"
+}
+
 variable "cf_api_url" {
   type = string
 }

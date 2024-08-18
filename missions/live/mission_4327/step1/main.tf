@@ -139,6 +139,9 @@ resource "btp_subaccount_entitlement" "hana-hdi-shared" {
 resource "local_file" "output_vars_step1" {
   count    = var.create_tfvars_file_for_next_stage ? 1 : 0
   content  = <<-EOT
+      globalaccount       = "${var.globalaccount}"
+      cli_server_url      = ${jsonencode(var.cli_server_url)}
+
       cf_api_url          = "${jsondecode(btp_subaccount_environment_instance.cloudfoundry.labels)["API Endpoint"]}"
       cf_org_id           = "${btp_subaccount_environment_instance.cloudfoundry.platform_id}"
 

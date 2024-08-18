@@ -1,3 +1,10 @@
+data "btp_whoami" me {}
+
+locals {
+  cf_org_users = setsubtract(toset(var.cf_org_users), [data.btp_whoami.me.email])
+  cf_org_admins = setsubtract(toset(var.cf_org_admins), [data.btp_whoami.me.email])
+}
+
 ######################################################################
 # Create space using CF provider
 ######################################################################
@@ -10,7 +17,7 @@ resource "cloudfoundry_space" "dev" {
 # add org and space users and managers
 ######################################################################
 resource "cloudfoundry_org_role" "organization_user" {
-  for_each = toset(var.cf_org_users)
+  for_each = toset(local.cf_org_users)
   username = each.value
   type     = "organization_user"
   org      = var.cf_org_id
@@ -18,7 +25,7 @@ resource "cloudfoundry_org_role" "organization_user" {
 }
 
 resource "cloudfoundry_org_role" "organization_manager" {
-  for_each = toset(var.cf_org_admins)
+  for_each = toset(local.cf_org_admins)
   username = each.value
   type     = "organization_manager"
   org      = var.cf_org_id
