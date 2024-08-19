@@ -35,16 +35,19 @@ variable "custom_idp" {
 variable "datasphere_first_name" {
   type        = string
   description = "The first name of the datasphere user."
+  default     = "FIRST_NAME"
 }
 
 variable "datasphere_last_name" {
   type        = string
   description = "The last name of the datasphere user."
+  default     = "LAST_NAME"
 }
 
 variable "datasphere_email" {
   type        = string
   description = "The email of the datasphere user."
+  default     = "first.last@test.com"
 
   validation {
     condition     = can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.datasphere_email))
