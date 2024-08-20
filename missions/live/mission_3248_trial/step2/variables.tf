@@ -1,3 +1,13 @@
+variable "globalaccount" {
+  type        = string
+  description = "The subdomain of the trial account."
+}
+
+variable "cli_server_url" {
+  type        = string
+  description = "The BTP CLI server URL."
+  default     = "https://cli.btp.cloud.sap"
+}
 
 variable "cf_api_url" {
   type        = string

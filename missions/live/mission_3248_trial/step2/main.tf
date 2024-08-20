@@ -3,7 +3,6 @@ data "btp_whoami" me {}
 locals {
 
   cf_org_managers = setsubtract(toset(var.cf_org_managers), [data.btp_whoami.me.email])
-  cf_org_users = setsubtract(toset(var.cf_org_users), [data.btp_whoami.me.email])
 
   cf_space_developers = setsubtract(toset(var.cf_space_developers), [data.btp_whoami.me.email])
   cf_space_managers = setsubtract(toset(var.cf_space_managers), [data.btp_whoami.me.email])
