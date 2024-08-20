@@ -113,16 +113,28 @@ variable "entitlements" {
   ]
 }
 
-variable "kyma_instance" { type = object({
-  name            = string
-  region          = string
-  machine_type    = string
-  auto_scaler_min = number
-  auto_scaler_max = number
-  createtimeout   = string
-  updatetimeout   = string
-  deletetimeout   = string
-}) }
+variable "kyma_instance" { 
+  type = object({
+    name            = string
+    region          = string
+    machine_type    = string
+    auto_scaler_min = number
+    auto_scaler_max = number
+    createtimeout   = string
+    updatetimeout   = string
+    deletetimeout   = string
+  }) 
+  default = {
+    name            = "my-kyma-environment"
+    region          = "us-east-1"
+    machine_type    = "mx5.xlarge"
+    auto_scaler_min = 3
+    auto_scaler_max = 20
+    createtimeout   = "1h"
+    updatetimeout   = "35m"
+    deletetimeout   = "1h"
+  }
+}
 
 variable "conn_dest_admins" {
   type        = list(string)

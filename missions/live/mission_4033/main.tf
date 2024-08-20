@@ -17,7 +17,8 @@ resource "btp_subaccount" "project" {
 
   name      = var.subaccount_name
   subdomain = local.project_subaccount_domain
-  region    = lower(var.region)
+#  region    = lower(var.region)
+  region    = "us10" // hard-coded as long as region selection is not on live + custom input fields (see NGPBUG-400361)
   usage     = "USED_FOR_PRODUCTION"
 }
 
