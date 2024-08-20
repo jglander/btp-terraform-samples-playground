@@ -12,7 +12,7 @@ locals {
 # Assignment of Cloud Foundry space roles 
 ###
 resource "cloudfoundry_org_role" "org_managers" {
-  for_each = toset(var.cf_org_managers)
+  for_each = toset(local.cf_org_managers)
   username = each.value
   type     = "organization_manager"
   org      = var.cf_org_id
@@ -42,14 +42,14 @@ locals {
 # Assignment of Cloud Foundry space roles 
 ###
 resource "cloudfoundry_space_role" "space_managers" {
-  for_each = toset(var.cf_space_managers)
+  for_each = toset(local.cf_space_managers)
   username = each.value
   type     = "space_manager"
   space    = local.space_id
 }
 
 resource "cloudfoundry_space_role" "space_developers" {
-  for_each = toset(var.cf_space_developers)
+  for_each = toset(local.cf_space_developers)
   username = each.value
   type     = "space_developer"
   space    = local.space_id
