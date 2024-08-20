@@ -50,6 +50,9 @@ locals {
 resource "local_file" "output_vars_step1" {
   count    = var.create_tfvars_file_for_next_stage ? 1 : 0
   content  = <<-EOT
+      globalaccount        = "${var.globalaccount}"
+      cli_server_url       = ${jsonencode(var.cli_server_url)}
+
       cf_api_url          = "${jsondecode(local.cf_environment_instance.labels)["API Endpoint"]}"
       cf_org_id           = "${local.cf_environment_instance.platform_id}"
       cf_org_managers     = ${jsonencode(var.cf_org_managers)}

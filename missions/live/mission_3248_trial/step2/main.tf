@@ -1,3 +1,14 @@
+data "btp_whoami" me {}
+
+locals {
+
+  cf_org_managers = setsubtract(toset(var.cf_org_managers), [data.btp_whoami.me.email])
+  cf_org_users = setsubtract(toset(var.cf_org_users), [data.btp_whoami.me.email])
+
+  cf_space_developers = setsubtract(toset(var.cf_space_developers), [data.btp_whoami.me.email])
+  cf_space_managers = setsubtract(toset(var.cf_space_managers), [data.btp_whoami.me.email])
+}
+
 ###
 # Assignment of Cloud Foundry space roles 
 ###
@@ -59,7 +70,8 @@ resource "cloudfoundry_service_instance" "abap_trial" {
   service_plan = data.cloudfoundry_service.abap_service_plans.service_plans["shared"]
   type         = "managed"
   parameters = jsonencode({
-    email = "${var.abap_admin_email}"
+#    email = "${var.abap_admin_email}"
+    email = data.btp_whoami.me.email
   })
   timeouts = {
     create = "30m"

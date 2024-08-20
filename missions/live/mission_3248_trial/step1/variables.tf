@@ -34,6 +34,7 @@ variable "cf_space_developers" {
 variable "cf_space_name" {
   type        = string
   description = "The name of the CF space to use."
+  default     = "dev"
 }
 
 variable "create_cf_space" {

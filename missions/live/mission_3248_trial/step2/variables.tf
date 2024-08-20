@@ -37,4 +37,6 @@ variable "create_cf_space" {
 variable "abap_admin_email" {
   type        = string
   description = "Email of the ABAP Administrator."
+# workaround for not yet available custom field feature
+  default     = ""
 }
