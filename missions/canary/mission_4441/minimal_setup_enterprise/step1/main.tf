@@ -71,14 +71,16 @@ resource "btp_subaccount_environment_instance" "cloudfoundry" {
 # Entitle
 resource "btp_subaccount_entitlement" "build_code" {
   subaccount_id = btp_subaccount.dc_mission.id
-  service_name  = "build-code"
+  # canary different than live
+  service_name  = "build-code-canary" //"build-code"
   plan_name     = "standard"
-  amount        = 1
+#  amount        = 1
 }
 # Subscribe
 resource "btp_subaccount_subscription" "build_code" {
   subaccount_id = btp_subaccount.dc_mission.id
-  app_name      = "build-code"
+  # canary different than live
+  app_name      = "build-code-canary" //"build-code"
   plan_name     = "standard"
   depends_on    = [btp_subaccount_entitlement.build_code]
 }
@@ -89,13 +91,16 @@ resource "btp_subaccount_subscription" "build_code" {
 # Entitle
 resource "btp_subaccount_entitlement" "sapappstudio" {
   subaccount_id = btp_subaccount.dc_mission.id
-  service_name  = "sapappstudio"
+  # canary different than live
+  service_name  = "canary-saas"//"sapappstudio"
   plan_name     = "build-code"
+  #amount        = 1
 }
 # Subscribe (depends on subscription of build-code)
 resource "btp_subaccount_subscription" "sapappstudio" {
   subaccount_id = btp_subaccount.dc_mission.id
-  app_name      = "sapappstudio"
+  # canary different than live
+  app_name      = "canary-saas"//"sapappstudio"
   plan_name     = "build-code"
   depends_on    = [btp_subaccount_subscription.build_code, btp_subaccount_entitlement.sapappstudio]
 }
