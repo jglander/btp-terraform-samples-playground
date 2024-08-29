@@ -55,7 +55,6 @@ variable "datasphere_email" {
 variable "datasphere_host_name" {
   type        = string
   description = "The host name for the SAP Datasphere service instance. The host name of the tenant can only contain numbers (0-9), lower case letters (a-z), and hyphens (-). The same host name can't be reused to create other instances."
-  default     = ""
 
   validation {
     condition     = length(var.datasphere_host_name) <= 100 && can(regex("^[a-z0-9-]*$", var.datasphere_host_name))
