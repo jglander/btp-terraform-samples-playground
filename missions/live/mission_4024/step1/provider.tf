@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "btp" {
-  idp            = var.custom_idp
+  #idp            = var.custom_idp
   cli_server_url = var.cli_server_url
   globalaccount  = var.globalaccount
 }

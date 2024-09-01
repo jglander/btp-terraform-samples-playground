@@ -285,6 +285,7 @@ resource "local_file" "output_vars_step1" {
   content  = <<-EOT
       globalaccount        = "${var.globalaccount}"
       cli_server_url       = ${jsonencode(var.cli_server_url)}
+      custom_idp           = "${var.custom_idp}"
 
       subaccount_id        = "${data.btp_subaccount.dc_mission.id}"
 
