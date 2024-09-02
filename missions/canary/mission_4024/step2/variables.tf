@@ -6,7 +6,6 @@ variable "globalaccount" {
 variable "subaccount_id" {
   type        = string
   description = "The subaccount ID."
-  default     = ""
 }
 
 variable "cli_server_url" {

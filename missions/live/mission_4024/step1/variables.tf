@@ -1,3 +1,6 @@
+# ------------------------------------------------------------------------------------------------------
+# Account variables
+# ------------------------------------------------------------------------------------------------------
 variable "globalaccount" {
   type        = string
   description = "The globalaccount subdomain where the sub account shall be created."
@@ -33,6 +36,9 @@ variable "subaccount_id" {
   default     = ""
 }
 
+# ------------------------------------------------------------------------------------------------------
+# service plans
+# ------------------------------------------------------------------------------------------------------
 variable "service_plan__sap_build_apps" {
   type        = string
   description = "The plan for SAP Build Apps subscription"
@@ -73,9 +79,12 @@ variable "service_plan__sap_identity_services_onboarding" {
   }
 }
 
+# ------------------------------------------------------------------------------------------------------
+# User lists
+# ------------------------------------------------------------------------------------------------------
 variable "subaccount_admins" {
   type        = list(string)
-  description = "Defines the colleagues who are added to each subaccount as emergency administrators."
+  description = "Defines the users who are added to subaccount as administrators."
 
   # add validation to check if admins contains a list of valid email addresses
   validation {
@@ -86,7 +95,7 @@ variable "subaccount_admins" {
 
 variable "launchpad_admins" {
   type        = list(string)
-  description = "Defines the colleagues who are added to each subaccount as emergency administrators."
+  description = "Defines the users who have the role of 'Launchpad_Admin'."
 
   # add validation to check if admins contains a list of valid email addresses
   validation {
@@ -97,24 +106,27 @@ variable "launchpad_admins" {
 
 variable "build_apps_admins" {
   type        = list(string)
-  description = "Defines the colleagues who have the role of 'BuildAppsAdmin' in SAP Build Apps."
+  description = "Defines the users who have the role of 'BuildAppsAdmin' in SAP Build Apps."
 }
 
 variable "build_apps_developers" {
   type        = list(string)
-  description = "Defines the colleagues who have the role of 'BuildAppsDeveloper' in SAP Build Apps."
+  description = "Defines the users who have the role of 'BuildAppsDeveloper' in SAP Build Apps."
 }
 
 variable "build_apps_registry_admin" {
   type        = list(string)
-  description = "Defines the colleagues who have the role of 'RegistryAdmin' in SAP Build Apps."
+  description = "Defines the users who have the role of 'RegistryAdmin' in SAP Build Apps."
 }
 
 variable "build_apps_registry_developer" {
   type        = list(string)
-  description = "Defines the colleagues who have the role of RegistryDeveloper' in SAP Build Apps."
+  description = "Defines the users who have the role of RegistryDeveloper' in SAP Build Apps."
 }
 
+# ------------------------------------------------------------------------------------------------------
+# Switch for creating tfvars for step 2
+# ------------------------------------------------------------------------------------------------------
 variable "create_tfvars_file_for_step2" {
   type        = bool
   description = "Switch to enable the creation of the tfvars file for step 2."
