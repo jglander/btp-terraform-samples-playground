@@ -26,7 +26,7 @@ resource "btp_subaccount" "dc_mission" {
 data "btp_subaccount" "dc_mission" {
   id = var.subaccount_id != "" ? var.subaccount_id : btp_subaccount.dc_mission[0].id
 }
-// TODO: clarify why dc_mission data cannot be used
+
 data "btp_subaccount" "subaccount" {
   id = data.btp_subaccount.dc_mission.id
 }
@@ -51,11 +51,6 @@ resource "btp_subaccount_subscription" "sap_identity_services_onboarding" {
   subaccount_id = data.btp_subaccount.dc_mission.id
   app_name      = local.service_name__sap_identity_services_onboarding
   plan_name     = var.service_plan__sap_identity_services_onboarding
-
-  # TODO: clarify if/when parameter is needed
-  parameters = jsonencode({
-    cloud_service = "TEST"
-  })
 }
 # IdP trust configuration
 resource "btp_subaccount_trust_configuration" "fully_customized" {
