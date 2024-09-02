@@ -1,10 +1,12 @@
-# Discovery Center mission - Keep the Core Clean Using SAP Build Apps with SAP S/4HANA
+# Discovery Center Mission: # Discovery Center mission: Keep the Core Clean Using SAP Build Apps with SAP S/4HANA (4024)
 
 ## Overview
 
-This sample shows how to setup your SAP BTP account for the Discovery Center Mission - [Keep the Core Clean Using SAP Build Apps with SAP S/4HANA](https://discovery-center.cloud.sap/index.html#/missiondetail/4024/)
+This sample shows how to setup your SAP BTP account for the Discovery Center Mission - [Keep the Core Clean Using SAP Build Apps with SAP S/4HANA](https://discovery-center.cloud.sap/index.html#/missiondetail/4024/) for your Enterprise BTP Account.
 
-## Content of setup
+The respective setup of a trial account is described in [SAP-samples/btp-terraform-samples/tree/main/released/discovery_center/mission_4024_trial/README.md](https://github.com/SAP-samples/btp-terraform-samples/tree/main/released/discovery_center/mission_4024_trial/README.md)
+
+## Content of setup (step1)
 
 The setup comprises the following resources:
 
@@ -13,69 +15,75 @@ The setup comprises the following resources:
 - Subscriptions to applications
 - Role collection assignments to users
 
+After this a setup step2 you will configure trust to use only custom IdP for in step1 subscribed SAP Build Apps.
+
 ## Deploying the resources
 
 Make sure that you are familiar with SAP BTP and know both the [Get Started with btp-terraform-samples](https://github.com/SAP-samples/btp-terraform-samples/blob/main/GET_STARTED.md) and the [Get Started with the Terraform Provider for BTP](https://developers.sap.com/tutorials/btp-terraform-get-started.html)
 
 To deploy the resources you must:
 
-1. Set the environment variables BTP_USERNAME and BTP_PASSWORD to pass credentials to the BTP provider to authenticate and interact with your BTP environments. 
+### Setup Step1
 
+1. Set your credentials as environment variables
+   
    ```bash
-   export BTP_USERNAME=<your_username>
-   export BTP_PASSWORD=<your_password>
+   export BTP_USERNAME ='<Email address of your BTP user>'
+   export BTP_PASSWORD ='<Password of your BTP user>'
    ```
 
-2. Change the variables in the `common_sample.tfvars` file to meet your requirements
+2. Go into folder `step1` and change the variables in the `sample.tfvars` file to meet your requirements
 
-   > The minimal set of parameters you should specify (beside user_email and password) is globalaccount (i.e. its subdomain) and the used custom_idp.
+   > The minimal set of parameters you should specify (besides user_email and password) is global account (i.e. its subdomain) and the used custom_idp and all user assignments
+   
+   > Keep the setting `create_tfvars_file_for_step2 = true` so that a `terraform.tfvars` file is created which contains your needed variables to execute setup `step2` without specifying them again in sample.tfvars there.
 
-3. Switch to the `step1` folder
-
-4. Change the variables in `sample.tfvars` file to meet your requirements
-
-   > ⚠ NOTE: You should pay attention **specifically** to the users defined in the samples.tfvars whether they already exist in your SAP BTP accounts. Otherwise you might get error messages like e.g. `Error: The user could not be found: jane.doe@test.com`.
-
-
-5. Initialize the workspace for step 1:
+3. In folder `step1` you initialize your workspace:
 
    ```bash
    terraform init
    ```
 
-6. You can check what Terraform plans to apply for step 1 based on your configuration:
+4. You can check what Terraform plans to apply based on your configuration:
 
    ```bash
-   terraform plan -var-file="../common_sample.tfvars" -var-file="sample.tfvars"
+   terraform plan -var-file="sample.tfvars"
    ```
 
-7. Apply your configuration for step 1 to provision the resources:
+5. Apply your configuration to provision the resources:
 
    ```bash
-   terraform apply  -var-file="../common_sample.tfvars" -var-file="sample.tfvars"
+   terraform apply -var-file="sample.tfvars"
    ```
 
-8. Switch to the `step2` folder. The configuration in this folder disables the default IdP of the subaccount created in step 1 for user logon.
+6. Verify e.g., in BTP cockpit that a new subaccount with a SAP Build Apps and SAP Build Workzone subscriptions have been created.
 
-9. Change the variables in `sample.tfvars` file to meet your requirements
+### Setup Step2
 
-   > ⚠ NOTE: You must copy the `subaccount_id` from the output of step 1 and use it for step 2.
-
-
-5. Initialize the workspace for step 2:
+7. Navigate into step2 directory and initialize your workspace there as well:
 
    ```bash
    terraform init
    ```
-
-6. You can check what Terraform plans to apply for step 2 based on your configuration:
-
-   ```bash
-   terraform plan -var-file="../common_sample.tfvars" -var-file="sample.tfvars"
-   ```
-
-7. Apply your configuration for step 2 to provision the resources:
+8. You can check what Terraform plans to apply based on your configuration:
 
    ```bash
-   terraform apply  -var-file="../common_sample.tfvars" -var-file="sample.tfvars"
+   terraform plan -var-file="terraform.tfvars"
    ```
+
+9. Apply your configuration to provision the resources:
+
+   ```bash
+   terraform apply -var-file="terraform.tfvars"
+   ```
+10. Verify e.g., in BTP cockpit that after step2 the Security/Trust Configuration in your subaccount has defined only set a user login for Custom IAS tenant, so that SAP Build Apps opens the respective login page.
+
+With this you have completed the quick account setup as described in the Discovery Center Mission - [Keep the Core Clean Using SAP Build Apps with SAP S/4HANA](https://discovery-center.cloud.sap/index.html#/missiondetail/4024/).
+
+## In the end
+
+You probably want to remove the assets after trying them out to avoid unnecessary costs. To do so execute the following command:
+
+```bash
+terraform destroy -var-file="terraform.tfvars"
+```
