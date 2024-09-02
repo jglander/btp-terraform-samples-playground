@@ -89,7 +89,7 @@ resource "btp_subaccount_entitlement" "sap_launchpad" {
   subaccount_id = data.btp_subaccount.dc_mission.id
   service_name  = local.service_name__sap_launchpad
   plan_name     = var.service_plan__sap_launchpad
-  #amount        = var.service_plan__sap_launchpad == "free" ? 1 : null
+  amount        = var.service_plan__sap_launchpad == "free" ? 1 : null
 }
 
 # Subscribe
