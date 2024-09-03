@@ -33,7 +33,7 @@ variable "subaccount_name" {
 variable "use_optional_resources" {
   type        = bool
   description = "optional resources are ignored if value is false"
-  default     = true
+  default     = false
 }
 
 # ------------------------------------------------------------------------------------------------------
