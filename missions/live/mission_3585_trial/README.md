@@ -1,20 +1,31 @@
-# Discovery Center mission - Get Started on SAP BTP with SAPUI5/Fiori - Create a Hello World App
+# Discovery Center Mission: Get Started on SAP BTP with SAPUI5/Fiori - Create a Hello World App
 
 ## Overview
 
-This sample shows how to set up your SAP BTP account for the Discovery Center Mission - [Get Started on SAP BTP with SAPUI5/Fiori - Create a Hello World App](https://discovery-center.cloud.sap/missiondetail/3585/)
+This sample shows how to setup your SAP BTP account for the Discovery Center Mission - [Get Started on SAP BTP with SAPUI5/Fiori - Create a Hello World App](https://discovery-center.cloud.sap/protected/index.html#/missiondetail/3585) for your trial account.
 
-## Content of setup
+The respective setup of an Enterprise account is described in [SAP-samples/btp-terraform-samples/tree/main/released/discovery_center/mission_3585/README.md](https://github.com/SAP-samples/btp-terraform-samples/tree/main/released/discovery_center/mission_3585_trial/README.md)
+
+## Important: Trial Account Prerequisites
+
+Contrary to an Enterprise account (where the setup will happen in a newly created subaccount, where entitlements are added), we make the assumption that in your trial account there is already a subaccount (by default named 'trial') with all the required service entitlements and not already in use!
+
+In a newly created trial account this is already true and you are good to go immediately with this setup. 
+
+But if you have already used services and/or setup subscriptions in your trial account, you have to make sure that you free up these resources to start with this setup here (i.e. delete the corresponding services/subscriptions used for this Discover Center Mission setup). Otherwise the setup would fail!
+
+For this mission setup the following resource (app subscription) is used: 
+
+- SAP Build Work Zone, standard edition (Subscription)
+
+You could delete these resources in your [BTP Trial Cockpit](https://cockpit.btp.cloud.sap/trial) on the corresponding trial subaccount pages
+- Services > Instances and Subscriptions
+
+## Content of setup (step1)
 
 The setup comprises the following resources:
 
-- Creation of the SAP BTP subaccount
-- Enablement of Cloudfoundry Environment - [see available regions and endpoints](https://help.sap.com/docs/btp/sap-business-technology-platform/regions-and-api-endpoints-available-for-cloud-foundry-environment)
-- Entitlements of services
-   * SAP Business Application Studio
-   * SAP Build Work Zone, standard edition
-   * Continous Integration & Delivery - Optional
-- Subscriptions to applications
+- Subscription to applications
 - Role collection assignments to users
 
 ## Deploying the resources
@@ -23,21 +34,18 @@ Make sure that you are familiar with SAP BTP and know both the [Get Started with
 
 To deploy the resources you must:
 
-1. Set the environment variables BTP_USERNAME and BTP_PASSWORD to pass credentials to the BTP provider to authenticate and interact with your BTP environments. 
-
+1. Set your credentials as environment variables
+   
    ```bash
-   export BTP_USERNAME=<your_username>
-   export BTP_PASSWORD=<your_password>
+   export BTP_USERNAME ='<Email address of your BTP user>'
+   export BTP_PASSWORD ='<Password of your BTP user>'
    ```
 
 2. Change the variables in the `sample.tfvars` file to meet your requirements
 
-   > The minimal set of parameters you should specify (besides user_email and password) is global account (i.e. its subdomain) and the used custom_idp and all user assignments
-
-   > ⚠ NOTE: You should pay attention **specifically** to the users defined in the samples.tfvars whether they already exist in your SAP BTP accounts. Otherwise, you might get error messages like, e.g., `Error: The user could not be found: jane.doe@test.com`.
-
-
-3. Initialize your workspace:
+   > The minimal set of parameters you should specify (besides user_email and password) is global account (i.e. its subdomain), trial subaccount ID and all user assignments
+   
+3. Then initialize your workspace:
 
    ```bash
    terraform init
@@ -49,15 +57,19 @@ To deploy the resources you must:
    terraform plan -var-file="sample.tfvars"
    ```
 
-6. Apply your configuration to provision the resources:
+5. Apply your configuration to provision the resources:
 
    ```bash
    terraform apply -var-file="sample.tfvars"
    ```
 
-## When finished
+6. Verify e.g., in [BTP Trial Cockpit](https://cockpit.btp.cloud.sap/trial) that SAP Build Workzone subscriptions have been created and respective users were assigned to role collections
 
-You probably want to remove the assets after trying them out to avoid unnecessary costs. To do so execute the following command:
+With this you have completed the quick account setup as described in the Discovery Center Mission - [Get Started on SAP BTP with SAPUI5/Fiori - Create a Hello World App](https://discovery-center.cloud.sap/protected/index.html#/missiondetail/3585).
+
+## In the end
+
+You probably want to remove the assets after trying them out. To do so execute the following command:
 
 ```bash
 terraform destroy -var-file="sample.tfvars"
