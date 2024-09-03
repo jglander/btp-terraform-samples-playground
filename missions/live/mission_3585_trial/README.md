@@ -21,7 +21,7 @@ For this mission setup the following resource (app subscription) is used:
 You could delete these resources in your [BTP Trial Cockpit](https://cockpit.btp.cloud.sap/trial) on the corresponding trial subaccount pages
 - Services > Instances and Subscriptions
 
-## Content of setup (step1)
+## Content of setup
 
 The setup comprises the following resources:
 
