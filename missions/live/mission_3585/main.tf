@@ -33,6 +33,7 @@ resource "btp_subaccount_entitlement" "cicd_service" {
 }
 # Get serviceplan_id for cicd-service with plan_name "default"
 data "btp_subaccount_service_plan" "cicd_service" {
+  count         = var.use_optional_resources ? 1 : 0
   subaccount_id = btp_subaccount.dc_mission.id
   offering_name = local.service_name__cicd_service
   name          = var.service_plan__cicd_service
@@ -42,7 +43,7 @@ data "btp_subaccount_service_plan" "cicd_service" {
 resource "btp_subaccount_service_instance" "cicd_service" {
   count         = var.use_optional_resources ? 1 : 0
   subaccount_id  = btp_subaccount.dc_mission.id
-  serviceplan_id = data.btp_subaccount_service_plan.cicd_service.id
+  serviceplan_id = data.btp_subaccount_service_plan.cicd_service[0].id
   name           = "default_cicd-service"
   # Subscription to the cicd-app subscription is required for creating the service instance
   # See as well https://help.sap.com/docs/continuous-integration-and-delivery/sap-continuous-integration-and-delivery/optional-enabling-api-usage?language=en-US
@@ -96,12 +97,6 @@ resource "btp_subaccount_subscription" "sap_launchpad" {
   plan_name     = var.service_plan__sap_launchpad
   depends_on    = [btp_subaccount_entitlement.sap_launchpad]
 }
-data "btp_subaccount_subscription" "sap_launchpad" {
-  subaccount_id = btp_subaccount.dc_mission.id
-  app_name      = local.service_name__sap_launchpad
-  plan_name     = var.service_plan__sap_launchpad
-  depends_on    = [btp_subaccount_subscription.sap_launchpad]
-}
 
 # ------------------------------------------------------------------------------------------------------
 # Setup cicd-app (Continuous Integration & Delivery)
@@ -122,28 +117,12 @@ resource "btp_subaccount_subscription" "cicd_app" {
   plan_name     = var.service_plan__cicd_app
   depends_on    = [btp_subaccount_entitlement.cicd_app]
 }
-data "btp_subaccount_subscription" "cicd_app" {
-  subaccount_id = btp_subaccount.dc_mission.id
-  app_name      = local.service_name__cicd_app
-  plan_name     = var.service_plan__cicd_app
-  depends_on    = [btp_subaccount_subscription.cicd_app]
-}
-
-# ------------------------------------------------------------------------------------------------------
-#  USERS AND ROLES
-# ------------------------------------------------------------------------------------------------------
-#
-# Get all available subaccount roles
-data "btp_subaccount_roles" "all" {
-  subaccount_id = btp_subaccount.dc_mission.id
-  depends_on    = [btp_subaccount_subscription.sap_launchpad, btp_subaccount_subscription.sapappstudio, btp_subaccount_subscription.cicd_app]
-}
 
 # ------------------------------------------------------------------------------------------------------
 # Assign role collection "Subaccount Administrator"
 # ------------------------------------------------------------------------------------------------------
 resource "btp_subaccount_role_collection_assignment" "subaccount_admin" {
-  for_each             = toset("${var.subaccount_admins}")
+  for_each             = toset(var.subaccount_admins)
   subaccount_id        = btp_subaccount.dc_mission.id
   role_collection_name = "Subaccount Administrator"
   user_name            = each.value
@@ -154,7 +133,7 @@ resource "btp_subaccount_role_collection_assignment" "subaccount_admin" {
 # Assign role collection "Business_Application_Studio_Administrator"
 # ------------------------------------------------------------------------------------------------------
 resource "btp_subaccount_role_collection_assignment" "bas_admins" {
-  for_each             = toset("${var.bas_admins}")
+  for_each             = toset(var.bas_admins)
   subaccount_id        = btp_subaccount.dc_mission.id
   role_collection_name = "Business_Application_Studio_Administrator"
   user_name            = each.value
@@ -165,7 +144,7 @@ resource "btp_subaccount_role_collection_assignment" "bas_admins" {
 # Assign role collection "Business_Application_Studio_Developer"
 # ------------------------------------------------------------------------------------------------------
 resource "btp_subaccount_role_collection_assignment" "bas_developer" {
-  for_each             = toset("${var.bas_developers}")
+  for_each             = toset(var.bas_developers)
   subaccount_id        = btp_subaccount.dc_mission.id
   role_collection_name = "Business_Application_Studio_Developer"
   user_name            = each.value
@@ -176,11 +155,8 @@ resource "btp_subaccount_role_collection_assignment" "bas_developer" {
 # Assign role collection "Launchpad_Admin"
 # ------------------------------------------------------------------------------------------------------
 # optional app subscription
-locals {
-  launchpad_admins = var.use_optional_resources == true ? var.launchpad_admins : []
-}
 resource "btp_subaccount_role_collection_assignment" "launchpad_admin" {
-  for_each             = toset("${local.launchpad_admins}")
+  for_each             = toset(var.use_optional_resources == true ? var.launchpad_admins : [])
   subaccount_id        = btp_subaccount.dc_mission.id
   role_collection_name = "Launchpad_Admin"
   user_name            = each.value
@@ -191,11 +167,9 @@ resource "btp_subaccount_role_collection_assignment" "launchpad_admin" {
 # Assign role collection "CICD Service Administrator"
 # ------------------------------------------------------------------------------------------------------
 # optional app subscription
-locals {
-  cicd_admins = var.use_optional_resources == true ? var.cicd_admins : []
-}
+
 resource "btp_subaccount_role_collection_assignment" "cicd_admins" {
-  for_each             = toset("${local.cicd_admins}")
+  for_each             = toset(var.use_optional_resources == true ? var.cicd_admins : [])
   subaccount_id        = btp_subaccount.dc_mission.id
   role_collection_name = "CICD Service Administrator"
   user_name            = each.value
@@ -206,11 +180,8 @@ resource "btp_subaccount_role_collection_assignment" "cicd_admins" {
 # Assign role collection "CICD Service Developer"
 # ------------------------------------------------------------------------------------------------------
 # optional app subscription
-locals {
-  cicd_developers = var.use_optional_resources == true ? var.cicd_developers : []
-}
 resource "btp_subaccount_role_collection_assignment" "cicd_developers" {
-  for_each             = toset("${var.cicd_developers}")
+  for_each             = toset(var.use_optional_resources == true ? var.cicd_developers : [])
   subaccount_id        = btp_subaccount.dc_mission.id
   role_collection_name = "CICD Service Developer"
   user_name            = each.value
