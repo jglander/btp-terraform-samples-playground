@@ -2,10 +2,8 @@ output "subaccount_id" {
   value       = btp_subaccount.dc_mission.id
   description = "The Global Account subdomain id."
 }
-
-output "cicd_app_subscription_url" {
-  value       = btp_subaccount_subscription.cicd_app.subscription_url
-  description = "Continuous Integration & Delivery subscription URL."
+output "cicd_service_id" {
+  value       = data.btp_subaccount_service_plan.cicd_service.id
 }
 
 output "sapappstudio_subscription_url" {
@@ -14,6 +12,11 @@ output "sapappstudio_subscription_url" {
 }
 
 output "sap_launchpad_subscription_url" {
-  value       = btp_subaccount_subscription.sap_launchpad.subscription_url
+  value       = data.btp_subaccount_subscription.sap_launchpad.subscription_url
   description = "SAP Build Work Zone, standard edition subscription URL."
+}
+
+output "cicd_app_subscription_url" {
+  value       = data.btp_subaccount_subscription.cicd_app.subscription_url
+  description = "Continuous Integration & Delivery subscription URL."
 }
