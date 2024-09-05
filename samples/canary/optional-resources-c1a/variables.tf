@@ -36,7 +36,7 @@ variable "subaccount_id" {
 variable "use_optional_resources" {
   type        = bool
   description = "optional resources are ignored if value is false"
-  default     = true
+  default     = false
 }
 
 variable "service_plan__sap_launchpad" {
