@@ -13,5 +13,4 @@ terraform {
 provider "cloudfoundry" {
     # resolve API URL from environment instance
     api_url = var.cf_api_url
-    origin = var.custom_idp_origin
 }
