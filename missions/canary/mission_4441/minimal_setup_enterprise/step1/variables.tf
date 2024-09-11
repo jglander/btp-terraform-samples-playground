@@ -50,9 +50,8 @@ variable "origin" {
 variable "origin_key" {
   type        = string
   description = "Defines the origin key of the identity provider"
-  default     = "sap.ids"
-  # The value for the origin_key can be defined
-  # but are normally set to "sap.ids", "sap.default" or "sap.custom"
+  default     = ""
+  # The value for the origin_key can be defined, set to "sap.ids", "sap.default" or "sap.custom"
 }
 
 variable "cf_landscape_label" {

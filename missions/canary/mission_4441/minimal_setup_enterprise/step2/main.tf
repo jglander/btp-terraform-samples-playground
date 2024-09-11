@@ -1,3 +1,8 @@
+locals {
+  custom_idp_tenant = var.custom_idp != "" ? element(split(".", var.custom_idp), 0) : ""
+  origin_key = local.custom_idp_tenant != "" ? "${local.custom_idp_tenant}-platform" : "sap.ids"
+}
+
 # ------------------------------------------------------------------------------------------------------
 # Create the Cloud Foundry space
 # ------------------------------------------------------------------------------------------------------
@@ -30,7 +35,7 @@ resource "cloudfoundry_org_role" "organization_user" {
   username = each.value
   type     = "organization_user"
   org      = var.cf_org_id
-  origin   = var.origin_key
+  origin   = local.origin_key
 }
 
 # ------------------------------------------------------------------------------------------------------
@@ -41,7 +46,7 @@ resource "cloudfoundry_org_role" "organization_manager" {
   username   = each.value
   type       = "organization_manager"
   org        = var.cf_org_id
-  origin     = var.origin_key
+  origin     = local.origin_key
   depends_on = [cloudfoundry_org_role.organization_user]
 }
 
@@ -54,7 +59,7 @@ resource "cloudfoundry_space_role" "space_manager" {
   username   = each.value
   type       = "space_manager"
   space      = cloudfoundry_space.dev.id
-  origin     = var.origin_key
+  origin     = local.origin_key
   depends_on = [cloudfoundry_org_role.organization_manager]
 }
 
@@ -66,6 +71,6 @@ resource "cloudfoundry_space_role" "space_developer" {
   username   = each.value
   type       = "space_developer"
   space      = cloudfoundry_space.dev.id
-  origin     = var.origin_key
+  origin     = local.origin_key
   depends_on = [cloudfoundry_org_role.organization_manager]
 }

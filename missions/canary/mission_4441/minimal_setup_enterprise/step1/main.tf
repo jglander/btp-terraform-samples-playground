@@ -226,11 +226,18 @@ resource "btp_subaccount_role_collection_assignment" "build_code_developer" {
 # ------------------------------------------------------------------------------------------------------
 # Create tfvars file for step 2 (if variable `create_tfvars_file_for_step2` is set to true)
 # ------------------------------------------------------------------------------------------------------
+
+locals {
+  custom_idp_tenant = var.custom_idp != "" ? element(split(".", var.custom_idp), 0) : ""
+  origin_key = local.custom_idp_tenant != "" ? "${local.custom_idp_tenant}-platform" : ""
+}
+
 resource "local_file" "output_vars_step1" {
   count    = var.create_tfvars_file_for_step2 ? 1 : 0
   content  = <<-EOT
       globalaccount        = "${var.globalaccount}"
       cli_server_url       = ${jsonencode(var.cli_server_url)}
+      custom_idp           = ${jsonencode(var.custom_idp)}
 
       subaccount_id        = "${data.btp_subaccount.dc_mission.id}"
 
@@ -239,7 +246,7 @@ resource "local_file" "output_vars_step1" {
       cf_org_id            = "${jsondecode(btp_subaccount_environment_instance.cloudfoundry.labels)["Org ID"]}"
       cf_org_name          = "${jsondecode(btp_subaccount_environment_instance.cloudfoundry.labels)["Org Name"]}"
 
-      origin_key           = "${var.origin}"
+      origin_key           = "${local.origin_key}"
 
       cf_space_name        = "${var.cf_space_name}"
 
