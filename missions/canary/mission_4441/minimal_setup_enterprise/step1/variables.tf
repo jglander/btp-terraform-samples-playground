@@ -18,6 +18,12 @@ variable "custom_idp" {
   default     = ""
 }
 
+variable "custom_idp_apps_origin_key" {
+  type        = string
+  description = "The custom identity provider for the subaccount."
+  default     = "sap.custom"
+}
+
 variable "region" {
   type        = string
   description = "The region where the subaccount shall be created in."

@@ -1,6 +1,16 @@
-locals {
-  custom_idp_tenant = var.custom_idp != "" ? element(split(".", var.custom_idp), 0) : ""
-  origin_key = local.custom_idp_tenant != "" ? "${local.custom_idp_tenant}-platform" : "sap.ids"
+# ------------------------------------------------------------------------------------------------------
+# Import custom trust config and disable for user login
+# ------------------------------------------------------------------------------------------------------
+import {
+  to = btp_subaccount_trust_configuration.default
+  id = "${var.subaccount_id},sap.default"
+}
+
+resource "btp_subaccount_trust_configuration" "default" {
+  subaccount_id            = var.subaccount_id
+  identity_provider        = ""
+  auto_create_shadow_users = false
+  available_for_user_logon = false
 }
 
 # ------------------------------------------------------------------------------------------------------
@@ -20,11 +30,15 @@ resource "cloudfoundry_space" "dev" {
 data "btp_whoami" "me" {}
 
 locals {
-  # Remove current user
-  cf_org_admins = setsubtract(toset(var.cf_org_admins), [data.btp_whoami.me.email])
+  # Remove current user if issuer (idp) of logged in user is not same as used custom idp 
+  cf_org_admins = data.btp_whoami.me.issuer != var.custom_idp ? var.cf_org_admins : setsubtract(toset(var.cf_org_admins), [data.btp_whoami.me.email])
 
   cf_space_managers   = var.cf_space_managers
   cf_space_developers = var.cf_space_developers
+
+  # get origin_key from custom.idp 
+  custom_idp_tenant = var.custom_idp != "" ? element(split(".", var.custom_idp), 0) : ""
+  origin_key = local.custom_idp_tenant != "" ? "${local.custom_idp_tenant}-platform" : "sap.ids"
 }
 
 # ------------------------------------------------------------------------------------------------------

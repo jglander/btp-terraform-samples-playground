@@ -152,6 +152,9 @@ locals {
   subaccount_admins     = var.subaccount_admins
   build_code_admins     = var.build_code_admins
   build_code_developers = var.build_code_developers
+
+  custom_idp_tenant = var.custom_idp != "" ? element(split(".", var.custom_idp), 0) : ""
+  origin_key = local.custom_idp_tenant != "" ? "${local.custom_idp_tenant}-platform" : ""
 }
 
 # Get all roles in the subaccount
@@ -168,6 +171,7 @@ resource "btp_subaccount_role_collection_assignment" "subaccount_admin" {
   subaccount_id        = data.btp_subaccount.dc_mission.id
   role_collection_name = "Subaccount Administrator"
   user_name            = each.value
+  origin               = local.origin_key
   depends_on           = [btp_subaccount.dc_mission]
 }
 
@@ -194,6 +198,7 @@ resource "btp_subaccount_role_collection_assignment" "build_code_administrator" 
   subaccount_id        = data.btp_subaccount.dc_mission.id
   role_collection_name = "Build Code Administrator"
   user_name            = each.value
+  origin               = var.custom_idp_apps_origin_key
   depends_on           = [btp_subaccount_role_collection.build_code_administrator]
 }
 
@@ -220,18 +225,13 @@ resource "btp_subaccount_role_collection_assignment" "build_code_developer" {
   subaccount_id        = data.btp_subaccount.dc_mission.id
   role_collection_name = "Build Code Developer"
   user_name            = each.value
+  origin               = var.custom_idp_apps_origin_key
   depends_on           = [btp_subaccount_role_collection.build_code_developer]
 }
 
 # ------------------------------------------------------------------------------------------------------
 # Create tfvars file for step 2 (if variable `create_tfvars_file_for_step2` is set to true)
 # ------------------------------------------------------------------------------------------------------
-
-locals {
-  custom_idp_tenant = var.custom_idp != "" ? element(split(".", var.custom_idp), 0) : ""
-  origin_key = local.custom_idp_tenant != "" ? "${local.custom_idp_tenant}-platform" : ""
-}
-
 resource "local_file" "output_vars_step1" {
   count    = var.create_tfvars_file_for_step2 ? 1 : 0
   content  = <<-EOT
