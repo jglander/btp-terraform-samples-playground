@@ -22,9 +22,9 @@ locals {
   cf_space_managers   = var.cf_space_managers
   cf_space_developers = var.cf_space_developers
 
-  # get origin_key from custom.idp 
+  # origin_key is default (sap.ids) if issuer (idp) of logged in user is not same as used custom idp, otherwise calculated from custom.idp
   custom_idp_tenant = var.custom_idp != "" ? element(split(".", var.custom_idp), 0) : ""
-  origin_key        = local.custom_idp_tenant != "" ? "${local.custom_idp_tenant}-platform" : "sap.ids"
+  origin_key        = data.btp_whoami.me.issuer != var.custom_idp ? "sap.ids" : "${local.custom_idp_tenant}-platform"
 }
 
 # ------------------------------------------------------------------------------------------------------
