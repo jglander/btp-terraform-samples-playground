@@ -16,8 +16,8 @@ data "btp_whoami" "me" {}
 
 locals {
   # Remove current user if issuer (idp) of logged in user is not same as used custom idp 
-  cf_org_admins = data.btp_whoami.me.issuer != var.custom_idp ? var.cf_org_admins : setsubtract(toset(var.cf_org_admins), [data.btp_whoami.me.email])
-  cf_org_users  = data.btp_whoami.me.issuer != var.custom_idp ? var.cf_org_admins : setsubtract(toset(var.cf_org_users), [data.btp_whoami.me.email])
+  cf_org_admins = setsubtract(toset(var.cf_org_admins), [data.btp_whoami.me.email])
+  cf_org_users  = setsubtract(toset(var.cf_org_users), [data.btp_whoami.me.email])
 
   cf_space_managers   = var.cf_space_managers
   cf_space_developers = var.cf_space_developers
