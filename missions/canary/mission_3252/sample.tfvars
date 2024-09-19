@@ -2,22 +2,25 @@
 # Provider configuration
 # ------------------------------------------------------------------------------------------------------
 custom_idp = "<<tenant-id>>.accounts.ondemand.com"
-
+cli_server_url = "https://canary.cli.btp.int.sap/"
 # ------------------------------------------------------------------------------------------------------
 # Account settings
 # ------------------------------------------------------------------------------------------------------
-globalaccount   = "<your-global-account-subdomain>"
-region          = "eu10"
-subaccount_name = "SAP Discovery Center Mission 3252"
+
+globalaccount   = "775253e0-3e95-4cde-b005-cdc3688cdc2c"
+region          = "us31"
+subaccount_name = "3252-jgl-live-1809a"
 
 # ------------------------------------------------------------------------------------------------------
 # Use case specific configuration
 # ------------------------------------------------------------------------------------------------------
-subaccount_admins         = ["another-user@test.com", "you@test.com"]
-subaccount_service_admins = ["another-user@test.com", "you@test.com"]
+subaccount_admins         = ["jens.glander@vodafone.de"]
+subaccount_service_admins = ["jens.glander@vodafone.de"]
 
 # Kyma instance parameters. When set to null, the name will be set to the subaccount subdomain and the
 # first available cluster region for the subaccount will be selected.
+kyma_instance_parameters = null
+/*
 kyma_instance_parameters = {
   name            = "my-kyma-environment"
   region          = "eu-central-1"
@@ -25,3 +28,4 @@ kyma_instance_parameters = {
   auto_scaler_min = 3
   auto_scaler_max = 20
 }
+*/
