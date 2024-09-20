@@ -242,7 +242,7 @@ resource "btp_subaccount_subscription" "event_mesh_application" {
 }
 
 resource "btp_subaccount_role_collection_assignment" "event_mesh_admin" {
-  depends_on           = [btp_subaccount_entitlement.event_mesh_application]
+  depends_on           = [btp_subaccount_subscription.event_mesh_application]
   for_each             = toset(var.event_mesh_admins)
   subaccount_id        = data.btp_subaccount.dc_mission.id
   role_collection_name = "Enterprise Messaging Administrator"
@@ -251,7 +251,7 @@ resource "btp_subaccount_role_collection_assignment" "event_mesh_admin" {
 }
 
 resource "btp_subaccount_role_collection_assignment" "event_mesh_developer" {
-  depends_on           = [btp_subaccount_entitlement.event_mesh_application]
+  depends_on           = [btp_subaccount_subscription.event_mesh_application]
   for_each             = toset(var.event_mesh_developers)
   subaccount_id        = data.btp_subaccount.dc_mission.id
   role_collection_name = "Enterprise Messaging Developer"
