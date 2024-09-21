@@ -430,6 +430,7 @@ resource "local_file" "output_vars_step1" {
       cf_space_name        = "${var.cf_space_name}"
 
       cf_org_admins        = ${jsonencode(var.cf_org_admins)}
+      cf_org_users        = ${jsonencode(var.cf_org_users)}
       cf_space_developers  = ${jsonencode(var.cf_space_developers)}
       cf_space_managers    = ${jsonencode(var.cf_space_managers)}
 
