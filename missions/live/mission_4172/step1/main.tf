@@ -148,12 +148,11 @@ resource "btp_subaccount_subscription" "hana_cloud_tools" {
   depends_on    = [btp_subaccount_entitlement.hana_cloud_tools]
 }
 
-# Assign users to Role Collection: SAP HANA Cloud Administrator
+# Assign user to Role Collection: SAP HANA Cloud Administrator
 resource "btp_subaccount_role_collection_assignment" "hana_cloud_admin" {
-  for_each             = toset(var.hana_cloud_admins)
   subaccount_id        = data.btp_subaccount.dc_mission.id
   role_collection_name = "SAP HANA Cloud Administrator"
-  user_name            = each.value
+  user_name            = hana_system_admin
   origin               = local.origin_key_app_users
   depends_on           = [btp_subaccount_subscription.hana_cloud_tools]
 }
