@@ -8,6 +8,11 @@ output "integrationsuite_subscription_url" {
   description = "SAP Integration Suite subscription URL."
 }
 
+output "sapappstudio_subscription_url" {
+  value       = btp_subaccount_subscription.sapappstudio.subscription_url
+  description = "SAP Business Application Studio subscription URL."
+}
+
 output "custom_idp" {
   value       = var.custom_idp
   description = "The custom identity provider."
