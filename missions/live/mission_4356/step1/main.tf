@@ -139,17 +139,20 @@ data "btp_subaccount_subscriptions" "all" {
   depends_on    = [btp_subaccount_entitlement.integrationsuite]
 }
 locals {
+  app_name = "it-cpi019-prov"
+  /*
   app_name = [
     for subscription in data.btp_subaccount_subscriptions.all.values :
     subscription
     if subscription.commercial_app_name == local.service_name__integrationsuite
   ][0].app_name
+  */
 }
 
 # Subscribe
 resource "btp_subaccount_subscription" "integrationsuite" {
   subaccount_id = data.btp_subaccount.dc_mission.id
-  app_name = local.app_name
+  app_name = "it-cpi019-prov" //local.app_name
   plan_name  = var.service_plan__integrationsuite
   depends_on = [data.btp_subaccount_subscriptions.all]
 }
