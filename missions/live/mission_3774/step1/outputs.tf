@@ -3,6 +3,11 @@ output "subaccount_id" {
   description = "The ID of the subaccount."
 }
 
+output "sap_launchpad_subscription_url" {
+  value       = btp_subaccount_subscription.build_workzone.subscription_url
+  description = "SAP Build Work Zone, standard edition subscription URL."
+}
+
 output "cf_api_url" {
   value       = jsondecode(btp_subaccount_environment_instance.cloudfoundry.labels)["API Endpoint"]
   description = "The Cloudfoundry API endpoint."
