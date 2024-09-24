@@ -149,11 +149,11 @@ locals {
 # Subscribe
 resource "btp_subaccount_subscription" "integrationsuite" {
   subaccount_id = data.btp_subaccount.dc_mission.id
-#  app_name = local.app_name
-  app_name = "it-cpi019-prov"
+  app_name = local.app_name
+#  app_name = "it-cpi019-prov"
   plan_name  = var.service_plan__integrationsuite
-#  depends_on = [data.btp_subaccount_subscriptions.all]
-  depends_on    = [btp_subaccount_entitlement.integrationsuite]
+  depends_on = [data.btp_subaccount_subscriptions.all]
+#  depends_on    = [btp_subaccount_entitlement.integrationsuite]
 }
 
 # ------------------------------------------------------------------------------------------------------
