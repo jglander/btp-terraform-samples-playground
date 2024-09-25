@@ -96,6 +96,7 @@ resource "btp_subaccount_role_collection_assignment" "subaccount_service_admin" 
 # ------------------------------------------------------------------------------------------------------
 data "btp_regions" "all" {}
 
+#we take the iaas provider for the first region associated with the subaccount 
 locals {
   subaccount_iaas_provider = [for region in data.btp_regions.all.values : region if region.region == data.btp_subaccount.dc_mission.region][0].iaas_provider
 }
@@ -107,10 +108,15 @@ resource "btp_subaccount_entitlement" "kymaruntime" {
   amount        = 1
 }
 
+data "btp_subaccount_environments" "all" {
+  subaccount_id = data.btp_subaccount.dc_mission.id
+  depends_on    = [btp_subaccount_entitlement.kymaruntime]
+}
+
 # Take the first kyma region from the first kyma environment if no kyma instance parameters are provided
 resource "null_resource" "cache_kyma_region" {
   triggers = {
-    region = var.kyma_instance != null ? var.kyma_instance.region : jsondecode([for env in data.btp_subaccount_environments.all.values : env if env.service_name == "kymaruntime" && env.environment_type == "kyma" && env.plan_name == lower(local.subaccount_iaas_provider)][0].schema_create).parameters.properties.region.enum[0]
+    region = var.kyma_instance_parameters != null ? var.kyma_instance_parameters.region : jsondecode([for env in data.btp_subaccount_environments.all.values : env if env.service_name == "kymaruntime" && env.environment_type == "kyma" && env.plan_name == lower(local.subaccount_iaas_provider)][0].schema_create).parameters.properties.region.enum[0]
   }
 
   lifecycle {
@@ -119,7 +125,7 @@ resource "null_resource" "cache_kyma_region" {
 }
 
 locals {
-  kyma_instance = var.kyma_instance != null ? var.kyma_instance : {
+  kyma_instance_parameters = var.kyma_instance_parameters != null ? var.kyma_instance_parameters : {
     name   = data.btp_subaccount.dc_mission.subdomain
     region = null_resource.cache_kyma_region.triggers.region
   }
@@ -127,39 +133,24 @@ locals {
 
 resource "btp_subaccount_environment_instance" "kyma" {
   subaccount_id    = data.btp_subaccount.dc_mission.id
-  name             = var.kyma_instance != null ? var.kyma_instance.name : data.btp_subaccount.dc_mission.subdomain
-#  name             = var.kyma_instance.name
+  name             = var.kyma_instance_parameters != null ? var.kyma_instance_parameters.name : data.btp_subaccount.dc_mission.subdomain
   environment_type = "kyma"
   service_name     = "kymaruntime"
   plan_name        = lower(local.subaccount_iaas_provider)
+  parameters       = jsonencode(local.kyma_instance_parameters)
+  timeouts         = var.kyma_instance_timeouts
 
-  parameters       = jsonencode(local.kyma_instance)
-/*
-  parameters = jsonencode({
-    name            = var.kyma_instance.name
-    region          = var.kyma_instance.region
-    machine_type    = var.kyma_instance.machine_type
-    auto_scaler_min = var.kyma_instance.auto_scaler_min
-    auto_scaler_max = var.kyma_instance.auto_scaler_max
-  })
-*/
-  timeouts = var.kyma_instance_timeouts
-/*
-  timeouts = {
-    create = var.kyma_instance.createtimeout
-    update = var.kyma_instance.updatetimeout
-    delete = var.kyma_instance.deletetimeout
-  }
-*/
   depends_on = [btp_subaccount_entitlement.kymaruntime]
 }
 
+/*
 # ------------------------------------------------------------------------------------------------------
 # Extract list of CF landscape labels from environments
 # ------------------------------------------------------------------------------------------------------
 data "btp_subaccount_environments" "all" {
   subaccount_id = data.btp_subaccount.dc_mission.id
 }
+*/
 
 # Take the landscape label from the first CF environment if no environment label is provided
 resource "terraform_data" "cf_landscape_label" {

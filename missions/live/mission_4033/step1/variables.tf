@@ -139,7 +139,7 @@ variable "kyma_instance" { type = object({
 }) }
 */
 
-variable "kyma_instance" {
+variable "kyma_instance_parameters" {
   type = object({
     name            = string
     region          = string
@@ -152,10 +152,10 @@ variable "kyma_instance" {
 
   validation {
     condition = (
-      var.kyma_instance == null ? true : length(var.kyma_instance.name) > 0 && length(var.kyma_instance.region) > 0
+      var.kyma_instance_parameters == null ? true : length(var.kyma_instance_parameters.name) > 0 && length(var.kyma_instance_parameters.region) > 0
     )
 
-    error_message = "Value for kyma_instance must either be null or an object with values for at least name and region"
+    error_message = "Value for kyma_instance_parameters must either be null or an object with values for at least name and region"
   }
 }
 

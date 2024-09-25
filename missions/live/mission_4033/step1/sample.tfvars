@@ -4,7 +4,7 @@
 # Your global account subdomain
 globalaccount   = "ticoo"
 region          = "us10"
-subaccount_name = "4033-jgl-tf-kyma-us10-2509-2-b"
+subaccount_name = "4033-jgl-tf-kyma-us10-2509-3-a"
 custom_idp      = "ag6010bvf.accounts.ondemand.com"
 
 /*
