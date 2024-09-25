@@ -3,7 +3,7 @@ terraform {
   required_providers {
     btp = {
       source  = "sap/btp"
-      version = "~> 1.5.0"
+      version = "~> 1.6.0"
     }
   }
 }
@@ -11,7 +11,6 @@ terraform {
 # Please checkout documentation on how best to authenticate against SAP BTP
 # via the Terraform provider for SAP BTP
 provider "btp" {
-  #idp            = var.custom_idp
   globalaccount  = var.globalaccount
   cli_server_url = var.cli_server_url
 }
