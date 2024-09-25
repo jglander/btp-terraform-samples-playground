@@ -34,6 +34,20 @@ variable "cli_server_url" {
   default     = "https://cli.btp.cloud.sap"
 }
 
+# cf org name
+variable "cf_org_name" {
+  type        = string
+  description = "Cloud Foundry Org Name"
+  default     = "cloud-foundry"
+}
+
+# cf landscape label
+variable "cf_landscape_label" {
+  type        = string
+  description = "The Cloud Foundry landscape (format example eu10-004)."
+  default     = ""
+}
+
 variable "subaccount_admins" {
   type        = list(string)
   description = "Defines the colleagues who are added to each subaccount as Subaccount administrators."
@@ -112,7 +126,7 @@ variable "entitlements" {
     }
   ]
 }
-
+/*
 variable "kyma_instance" { type = object({
   name            = string
   region          = string
@@ -123,6 +137,41 @@ variable "kyma_instance" { type = object({
   updatetimeout   = string
   deletetimeout   = string
 }) }
+*/
+
+variable "kyma_instance" {
+  type = object({
+    name            = string
+    region          = string
+    machine_type    = string
+    auto_scaler_min = number
+    auto_scaler_max = number
+  })
+  description = "Your Kyma environment configuration parameters. Name and region are mandatory. Please refer to the following documentation for more details: https://help.sap.com/docs/btp/sap-business-technology-platform/provisioning-and-update-parameters-in-kyma-environment."
+  default     = null
+
+  validation {
+    condition = (
+      var.kyma_instance == null ? true : length(var.kyma_instance.name) > 0 && length(var.kyma_instance.region) > 0
+    )
+
+    error_message = "Value for kyma_instance must either be null or an object with values for at least name and region"
+  }
+}
+
+variable "kyma_instance_timeouts" {
+  type = object({
+    create = string
+    update = string
+    delete = string
+  })
+  description = "Timeouts for the creation, update, and deletion of the Kyma instance."
+  default = {
+    create = "1h"
+    update = "35m"
+    delete = "1h"
+  }
+}
 
 variable "int_provisioners" {
   type        = list(string)
@@ -190,4 +239,15 @@ variable "create_tfvars_file_for_step2" {
   type        = bool
   description = "Switch to enable the creation of the tfvars file for step 2."
   default     = true
+}
+
+variable "cf_space_name" {
+  type        = string
+  description = "Name of the Cloud Foundry space."
+  default     = "dev"
+
+  validation {
+    condition     = can(regex("^.{1,255}$", var.cf_space_name))
+    error_message = "The Cloud Foundry space name must not be emtpy and not exceed 255 characters."
+  }
 }

@@ -6,6 +6,7 @@ resource "random_uuid" "uuid" {}
 locals {
   random_uuid       = random_uuid.uuid.result
   subaccount_domain = lower(replace("mission-4033-${local.random_uuid}", "_", "-"))
+  subaccount_cf_org = substr(replace("${local.subaccount_domain}", "-", ""), 0, 32)
 }
 
 locals {
@@ -106,13 +107,34 @@ resource "btp_subaccount_entitlement" "kymaruntime" {
   amount        = 1
 }
 
+# Take the first kyma region from the first kyma environment if no kyma instance parameters are provided
+resource "null_resource" "cache_kyma_region" {
+  triggers = {
+    region = var.kyma_instance != null ? var.kyma_instance.region : jsondecode([for env in data.btp_subaccount_environments.all.values : env if env.service_name == "kymaruntime" && env.environment_type == "kyma" && env.plan_name == lower(local.subaccount_iaas_provider)][0].schema_create).parameters.properties.region.enum[0]
+  }
+
+  lifecycle {
+    ignore_changes = all
+  }
+}
+
+locals {
+  kyma_instance = var.kyma_instance != null ? var.kyma_instance : {
+    name   = data.btp_subaccount.dc_mission.subdomain
+    region = null_resource.cache_kyma_region.triggers.region
+  }
+}
 
 resource "btp_subaccount_environment_instance" "kyma" {
   subaccount_id    = data.btp_subaccount.dc_mission.id
-  name             = var.kyma_instance.name
+  name             = var.kyma_instance != null ? var.kyma_instance.name : data.btp_subaccount.dc_mission.subdomain
+#  name             = var.kyma_instance.name
   environment_type = "kyma"
   service_name     = "kymaruntime"
   plan_name        = lower(local.subaccount_iaas_provider)
+
+  parameters       = jsonencode(local.kyma_instance)
+/*
   parameters = jsonencode({
     name            = var.kyma_instance.name
     region          = var.kyma_instance.region
@@ -120,12 +142,43 @@ resource "btp_subaccount_environment_instance" "kyma" {
     auto_scaler_min = var.kyma_instance.auto_scaler_min
     auto_scaler_max = var.kyma_instance.auto_scaler_max
   })
+*/
+  timeouts = var.kyma_instance_timeouts
+/*
   timeouts = {
     create = var.kyma_instance.createtimeout
     update = var.kyma_instance.updatetimeout
     delete = var.kyma_instance.deletetimeout
   }
+*/
   depends_on = [btp_subaccount_entitlement.kymaruntime]
+}
+
+# ------------------------------------------------------------------------------------------------------
+# Extract list of CF landscape labels from environments
+# ------------------------------------------------------------------------------------------------------
+data "btp_subaccount_environments" "all" {
+  subaccount_id = data.btp_subaccount.dc_mission.id
+}
+
+# Take the landscape label from the first CF environment if no environment label is provided
+resource "terraform_data" "cf_landscape_label" {
+  input = length(var.cf_landscape_label) > 0 ? var.cf_landscape_label : [for env in data.btp_subaccount_environments.all.values : env if env.service_name == "cloudfoundry" && env.environment_type == "cloudfoundry"][0].landscape_label
+}
+
+# ------------------------------------------------------------------------------------------------------
+# Creation of Cloud Foundry environment
+# ------------------------------------------------------------------------------------------------------
+resource "btp_subaccount_environment_instance" "cloudfoundry" {
+  subaccount_id    = data.btp_subaccount.dc_mission.id
+  name             = var.cf_org_name
+  environment_type = "cloudfoundry"
+  service_name     = "cloudfoundry"
+  plan_name        = "standard"
+  landscape_label  = terraform_data.cf_landscape_label.output
+  parameters = jsonencode({
+    instance_name = local.subaccount_cf_org
+  })
 }
 
 # ------------------------------------------------------------------------------------------------------
@@ -230,7 +283,7 @@ resource "btp_subaccount_entitlement" "process_automation_service" {
   depends_on    = [btp_subaccount_subscription.build_process_automation]
 }
 
-# Get plan for SAP AI Core service
+# Get plan for SAP Build Process Automation service
 data "btp_subaccount_service_plan" "process_automation_service" {
   subaccount_id = data.btp_subaccount.dc_mission.id
   offering_name = local.service_name__sap_process_automation_service
@@ -243,7 +296,7 @@ resource "btp_subaccount_service_instance" "process_automation_service_instance"
   subaccount_id  = data.btp_subaccount.dc_mission.id
   serviceplan_id = data.btp_subaccount_service_plan.process_automation_service.id
   name           = "build-process-automation-service-instance"
-  depends_on     = [btp_subaccount_entitlement.process_automation_service]
+  depends_on     = [btp_subaccount_entitlement.process_automation_service, btp_subaccount_environment_instance.cloudfoundry]
 }
 
 # Create service binding to SAP Build Process Automation Service (exposed for a specific user group)
