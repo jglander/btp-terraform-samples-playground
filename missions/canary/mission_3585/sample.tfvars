@@ -1,27 +1,26 @@
 # ------------------------------------------------------------------------------------------------------
 # Provider configuration
 # ------------------------------------------------------------------------------------------------------
-# Your global account subdomain
-globalaccount = "xxxxxxxx-xxxxxxx-xxxxxxx-xxxxxxxx-xxxxxx"
+custom_idp = "acpserr5c.accounts400.ondemand.com"
+cli_server_url     = "https://canary.cli.btp.int.sap/"
 
-# The CLI server URL (needs to be set to null if you are using the default CLI server)
-cli_server_url = null
+# ------------------------------------------------------------------------------------------------------
+# Account settings
+# ------------------------------------------------------------------------------------------------------
+globalaccount = "775253e0-3e95-4cde-b005-cdc3688cdc2c" // cas demo canary
+region = "eu10-canary"
 
-# Region for your subaccount
-region = "us10"
-
-# Name of your sub account
-subaccount_name = "SAP Discovery Center Mission 3585"
+subaccount_name = "3585-jgl-tf-service-url-2609b"
 
 # ------------------------------------------------------------------------------------------------------
 # USER ROLES
 # ------------------------------------------------------------------------------------------------------
-subaccount_admins = ["another.user@test.com"]
+subaccount_admins = ["jens.glander@vodafone.de"]
 
-launchpad_admins = ["another.user@test.com", "you@test.com"]
+launchpad_admins = ["jens.glander@vodafone.de"]
 
-cicd_admins     = ["another.user@test.com", "you@test.com"]
-cicd_developers = ["another.user@test.com", "you@test.com"]
+cicd_admins     = ["jens.glander@vodafone.de"]
+cicd_developers = ["jens.glander@vodafone.de"]
 
-bas_admins     = ["another.user@test.com", "you@test.com"]
-bas_developers = ["another.user@test.com", "you@test.com"]
+bas_admins     = ["jens.glander@vodafone.de"]
+bas_developers = ["jens.glander@vodafone.de"]
