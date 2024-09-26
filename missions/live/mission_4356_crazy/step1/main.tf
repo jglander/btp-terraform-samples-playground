@@ -151,7 +151,7 @@ resource "btp_subaccount_subscription" "integrationsuite" {
   ][0].app_name
 */
   plan_name  = "enterprise_agreement"//var.service_plan__integrationsuite
-  depends_on = [data.btp_subaccount_subscriptions.all, btp_subaccount_entitlement.integrationsuite]
+  depends_on = [btp_subaccount_environment_instance.cloudfoundry, data.btp_subaccount_subscriptions.all, btp_subaccount_entitlement.integrationsuite]
 }
 
 # ------------------------------------------------------------------------------------------------------
