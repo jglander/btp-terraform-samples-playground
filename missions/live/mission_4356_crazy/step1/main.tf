@@ -142,13 +142,14 @@ data "btp_subaccount_subscriptions" "all" {
 # Subscribe
 resource "btp_subaccount_subscription" "integrationsuite" {
   subaccount_id = data.btp_subaccount.dc_mission.id
-#  app_name = "it-cpi019-prov"
+  app_name = "it-cpi019-prov"
+/*
   app_name = [
     for subscription in data.btp_subaccount_subscriptions.all.values :
     subscription
     if subscription.commercial_app_name == local.service_name__integrationsuite
   ][0].app_name
-
+*/
   plan_name  = "enterprise_agreement"//var.service_plan__integrationsuite
   depends_on = [data.btp_subaccount_subscriptions.all, btp_subaccount_entitlement.integrationsuite]
 }
