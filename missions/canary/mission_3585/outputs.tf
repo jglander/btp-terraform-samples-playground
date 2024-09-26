@@ -19,6 +19,6 @@ output "sap_launchpad_subscription_url" {
 }
 
 output "cicd_service_instance_dashboard_url" {
-  value       = btp_subaccount_service_instance.cicd_service.dashboard_url
-  description = "Continuous Integration & Delivery service instance URL."
+  value       = btp_subaccount_subscription.cicd_app.subscription_url
+  description = "Continuous Integration & Delivery service instance URL (fake)."
 }
