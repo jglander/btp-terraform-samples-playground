@@ -64,7 +64,7 @@ variable "hana_cloud_admins" {
 variable "cicd_service_plan" {
   type        = string
   description = "The plan for Continous Integration & Delivery subscription"
-  default     = "free"
+  default     = "default"
   validation {
     condition     = contains(["free", "default"], var.cicd_service_plan)
     error_message = "Invalid value for Continous Integraion & Delivery. Only 'free' and 'default' are allowed."
