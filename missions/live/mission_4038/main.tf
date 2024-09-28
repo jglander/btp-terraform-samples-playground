@@ -108,11 +108,16 @@ data "btp_subaccount_subscriptions" "all" {
 
 resource "btp_subaccount_subscription" "sap_integration_suite" {
   subaccount_id = data.btp_subaccount.dc_mission.id
+  app_name = "it-cpi019-prov"
+
+  /*
   app_name = [
     for subscription in data.btp_subaccount_subscriptions.all.values :
     subscription
     if subscription.commercial_app_name == local.service_name__sap_integration_suite
   ][0].app_name
+  */
+
   plan_name  = var.service_plan__sap_integration_suite
   depends_on = [data.btp_subaccount_subscriptions.all]
 }
