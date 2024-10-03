@@ -215,6 +215,7 @@ locals {
   origin_key        = local.custom_idp_tenant != "" ? "${local.custom_idp_tenant}-platform" : ""
 }
 
+/* ---
 # ------------------------------------------------------------------------------------------------------
 # Assign role collection "Subaccount Administrator"
 # ------------------------------------------------------------------------------------------------------
@@ -238,6 +239,7 @@ resource "btp_subaccount_role_collection_assignment" "subaccount_service_admin" 
   origin               = local.origin_key
   depends_on           = [btp_subaccount.dc_mission]
 }
+--- */
 
 /* ---
 # ------------------------------------------------------------------------------------------------------
