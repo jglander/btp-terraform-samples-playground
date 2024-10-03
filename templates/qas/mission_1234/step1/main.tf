@@ -9,9 +9,7 @@ locals {
   subaccount_domain = "dcmission1234${local.random_uuid}"
 }
 
-# ------------------------------------------------------------------------------------------------------
 # Creation of subaccount
-# ------------------------------------------------------------------------------------------------------
 resource "btp_subaccount" "dc_mission" {
   count = var.subaccount_id == "" ? 1 : 0
 
@@ -24,9 +22,29 @@ data "btp_subaccount" "dc_mission" {
   id = var.subaccount_id != "" ? var.subaccount_id : btp_subaccount.dc_mission[0].id
 }
 
-# ------------------------------------------------------------------------------------------------------
+/* ---
+# Assign role collection "Subaccount Administrator"
+resource "btp_subaccount_role_collection_assignment" "subaccount_admin" {
+  for_each             = toset("${local.subaccount_admins}")
+  subaccount_id        = data.btp_subaccount.dc_mission.id
+  role_collection_name = "Subaccount Administrator"
+  user_name            = each.value
+  origin               = local.origin_key
+  depends_on           = [btp_subaccount.dc_mission]
+}
+--- */
+
+# Assign role collection "Subaccount Service Administrator"
+resource "btp_subaccount_role_collection_assignment" "subaccount_service_admin" {
+  for_each             = toset("${local.subaccount_service_admins}")
+  subaccount_id        = data.btp_subaccount.dc_mission.id
+  role_collection_name = "Subaccount Service Administrator"
+  user_name            = each.value
+  origin               = local.origin_key
+  depends_on           = [btp_subaccount.dc_mission]
+}
+
 # Assign custom IDP to sub account (if custom_idp is set)
-# ------------------------------------------------------------------------------------------------------
 resource "btp_subaccount_trust_configuration" "fully_customized" {
   # Only create trust configuration if custom_idp has been set 
   count             = var.custom_idp == "" ? 0 : 1
@@ -214,32 +232,6 @@ locals {
   custom_idp_tenant = var.custom_idp != "" ? element(split(".", var.custom_idp), 0) : ""
   origin_key        = local.custom_idp_tenant != "" ? "${local.custom_idp_tenant}-platform" : ""
 }
-
-/* ---
-# ------------------------------------------------------------------------------------------------------
-# Assign role collection "Subaccount Administrator"
-# ------------------------------------------------------------------------------------------------------
-resource "btp_subaccount_role_collection_assignment" "subaccount_admin" {
-  for_each             = toset("${local.subaccount_admins}")
-  subaccount_id        = data.btp_subaccount.dc_mission.id
-  role_collection_name = "Subaccount Administrator"
-  user_name            = each.value
-  origin               = local.origin_key
-  depends_on           = [btp_subaccount.dc_mission]
-}
-
-# ------------------------------------------------------------------------------------------------------
-# Assign role collection "Subaccount Service Administrator"
-# ------------------------------------------------------------------------------------------------------
-resource "btp_subaccount_role_collection_assignment" "subaccount_service_admin" {
-  for_each             = toset("${local.subaccount_service_admins}")
-  subaccount_id        = data.btp_subaccount.dc_mission.id
-  role_collection_name = "Subaccount Service Administrator"
-  user_name            = each.value
-  origin               = local.origin_key
-  depends_on           = [btp_subaccount.dc_mission]
-}
---- */
 
 /* ---
 # ------------------------------------------------------------------------------------------------------
