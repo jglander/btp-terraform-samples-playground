@@ -55,7 +55,9 @@ output "cf_space_managers" {
   description = "List of users to set as Cloudfoundry space managers."
 }
 
+/* ---
 output "origin" {
   value       = var.origin
   description = "The identity provider for the UAA user."
 }
+--- */

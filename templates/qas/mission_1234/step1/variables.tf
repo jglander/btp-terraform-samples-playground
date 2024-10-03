@@ -18,11 +18,13 @@ variable "custom_idp" {
   default     = ""
 }
 
+/* ---
 variable "custom_idp_apps_origin_key" {
   type        = string
   description = "The custom identity provider for the subaccount."
   default     = "sap.custom"
 }
+--- */
 
 variable "region" {
   type        = string
@@ -33,7 +35,6 @@ variable "region" {
 variable "subaccount_name" {
   type        = string
   description = "The subaccount name."
-  default     = "My SAP Build Code subaccount."
 }
 
 variable "subaccount_id" {
@@ -42,9 +43,70 @@ variable "subaccount_id" {
   default     = ""
 }
 
+# User lists
+variable "subaccount_admins" {
+  type        = list(string)
+  description = "Defines the colleagues who are added to subaccount as administrator"
+}
+
+variable "subaccount_service_admins" {
+  type        = list(string)
+  description = "Defines the colleagues who are added to subaccount as service administrator"
+}
+
 # ------------------------------------------------------------------------------------------------------
-# cf related variables
+# Switch for creating tfvars for step 2
 # ------------------------------------------------------------------------------------------------------
+variable "create_tfvars_file_for_step2" {
+  type        = bool
+  description = "Switch to enable the creation of the tfvars file for step 2."
+  default     = false
+}
+
+# ------------------------------------------------------------------------------------------------------
+# use case specific variables
+# ------------------------------------------------------------------------------------------------------
+variable "use_optional_resources" {
+  type        = bool
+  description = "optional resources are ignored if value is false"
+  default     = false
+}
+
+# ------------------------------------------------------------------------------------------------------
+# ENVIRONMENTS (plans, user lists and other vars)
+# ------------------------------------------------------------------------------------------------------
+# cloudfoundry (Cloud Foundry Environment)
+# ------------------------------------------------------------------------------------------------------
+# plans
+variable "service_env_plan__cloudfoundry" {
+  type        = string
+  description = "The plan for service environment 'Cloud Foundry Environment' with technical name 'cloudfoundry'"
+  default     = "standard"
+  validation {
+    condition     = contains(["standard"], var.service_env_plan__cloudfoundry)
+    error_message = "Invalid value for service_env_plan__cloudfoundry. Only 'standard' is allowed."
+  }
+}
+
+# user lists
+variable "cf_org_managers" {
+  type        = list(string)
+  description = "List of managers for the Cloud Foundry org."
+}
+variable "cf_org_users" {
+  type        = list(string)
+  description = "List of users for the Cloud Foundry org."
+}
+variable "cf_space_managers" {
+  type        = list(string)
+  description = "List of managers for the Cloud Foundry space."
+}
+variable "cf_space_developers" {
+  type        = list(string)
+  description = "List of developers for the Cloud Foundry space."
+}
+
+/* ---
 variable "origin" {
   type        = string
   description = "Defines the origin key of the identity provider"
@@ -59,6 +121,7 @@ variable "origin_key" {
   default     = ""
   # The value for the origin_key can be defined, set to "sap.ids", "sap.default" or "sap.custom"
 }
+--- */
 
 variable "cf_landscape_label" {
   type        = string
@@ -69,7 +132,6 @@ variable "cf_landscape_label" {
 variable "cf_org_name" {
   type        = string
   description = "Name of the Cloud Foundry org."
-  default     = "mission-4441-sap-build-code"
 
   validation {
     condition     = can(regex("^.{1,255}$", var.cf_org_name))
@@ -100,16 +162,8 @@ variable "hana_cloud_system_password" {
 # ------------------------------------------------------------------------------------------------------
 # services plans
 # ------------------------------------------------------------------------------------------------------
-variable "service_plan__cloudfoundry" {
-  type        = string
-  description = "The plan for service 'Destination Service' with technical name 'destination'"
-  default     = "standard"
-  validation {
-    condition     = contains(["standard"], var.service_plan__cloudfoundry)
-    error_message = "Invalid value for service_plan__cloudfoundry. Only 'standard' is allowed."
-  }
-}
 
+/* ---
 variable "service_plan__connectivity" {
   type        = string
   description = "The plan for service 'Connectivity Service' with technical name 'connectivity'"
@@ -133,7 +187,9 @@ variable "service_plan__xsuaa" {
   description = "The plan for service 'Authorization and Trust Management Service' with technical name 'xsuaa'"
   default     = "application"
 }
+--- */
 
+/* ---
 # ------------------------------------------------------------------------------------------------------
 # app subscription plans
 # ------------------------------------------------------------------------------------------------------
@@ -156,19 +212,9 @@ variable "service_plan__sapappstudio" {
     error_message = "Invalid value for service_plan__sapappstudio. Only 'standard-edition' is allowed."
   }
 }
+--- */
 
-# ------------------------------------------------------------------------------------------------------
 # User lists
-# ------------------------------------------------------------------------------------------------------
-variable "subaccount_admins" {
-  type        = list(string)
-  description = "Defines the colleagues who are added to subaccount as administrator"
-}
-
-variable "subaccount_service_admins" {
-  type        = list(string)
-  description = "Defines the colleagues who are added to subaccount as service administrator"
-}
 
 /* ---
 variable "integration_provisioners" {
@@ -197,32 +243,3 @@ variable "connectivity_destination_admins" {
 }
 --- */
 
-
-variable "cf_org_managers" {
-  type        = list(string)
-  description = "Defines the colleagues who are added to a Cloudfoundry as org managers."
-}
-
-variable "cf_org_users" {
-  type        = list(string)
-  description = "Defines the colleagues who are added to a Cloudfoundry as org users."
-}
-
-variable "cf_space_managers" {
-  type        = list(string)
-  description = "Defines the colleagues who are added to a CF space as space manager."
-}
-
-variable "cf_space_developers" {
-  type        = list(string)
-  description = "Defines the colleagues who are added to a CF space as space developer."
-}
-
-# ------------------------------------------------------------------------------------------------------
-# Switch for creating tfvars for step 2
-# ------------------------------------------------------------------------------------------------------
-variable "create_tfvars_file_for_step2" {
-  type        = bool
-  description = "Switch to enable the creation of the tfvars file for step 2."
-  default     = true
-}
