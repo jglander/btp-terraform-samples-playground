@@ -70,17 +70,16 @@ resource "terraform_data" "cf_landscape_label" {
 # Create instance
 resource "btp_subaccount_environment_instance" "cloudfoundry" {
   subaccount_id    = data.btp_subaccount.dc_mission.id
-  name             = "cf-${random_uuid.uuid.result}"
+  name             = var.cf_org_name
   environment_type = "cloudfoundry"
   service_name     = local.service_env_name__cloudfoundry
   plan_name        = var.service_env_plan__cloudfoundry
   landscape_label  = terraform_data.cf_landscape_label.output
 
   parameters = jsonencode({
-    instance_name = "cf-${random_uuid.uuid.result}"
+    instance_name = var.cf_org_name
   })
 }
-
 
 # ------------------------------------------------------------------------------------------------------
 # SERVICES

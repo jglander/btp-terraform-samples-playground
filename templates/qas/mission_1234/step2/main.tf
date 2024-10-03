@@ -22,7 +22,7 @@ resource "btp_subaccount_trust_configuration" "default" {
 # Create the Cloud Foundry space
 # ------------------------------------------------------------------------------------------------------
 resource "cloudfoundry_space" "dev" {
-  name = "dev"
+  name = var.cf_space_name
   org  = var.cf_org_id
 }
 
