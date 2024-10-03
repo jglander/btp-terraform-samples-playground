@@ -170,6 +170,7 @@ variable "subaccount_service_admins" {
   description = "Defines the colleagues who are added to subaccount as service administrator"
 }
 
+/* ---
 variable "integration_provisioners" {
   type        = list(string)
   description = "Integration Provisioner"
@@ -194,6 +195,8 @@ variable "connectivity_destination_admins" {
   type        = list(string)
   description = "Defines the colleagues who are administrators for Connectivity and Destinations"
 }
+--- */
+
 
 variable "cf_org_managers" {
   type        = list(string)
