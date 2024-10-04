@@ -1,4 +1,4 @@
-# Description: This file contains the input variables for the mission 4356 step 2.
+# Description: This file contains the input variables for the mission 1234 step 2.
 #
 # ------------------------------------------------------------------------------------------------------
 # Account variables
@@ -26,8 +26,12 @@ variable "custom_idp" {
 }
 
 # ------------------------------------------------------------------------------------------------------
-# cf related variables
+# ENVIRONMENTS variables
 # ------------------------------------------------------------------------------------------------------
+# cloudfoundry (Cloud Foundry Environment)
+# ------------------------------------------------------------------------------------------------------
+#
+/* ---
 variable "origin" {
   type        = string
   description = "Defines the origin of the identity provider"
@@ -43,6 +47,7 @@ variable "origin_key" {
   # The value for the origin_key can be defined
   # but are normally set to "sap.ids", "sap.default" or "sap.custom"
 }
+--- */
 
 variable "cf_api_url" {
   type        = string
@@ -54,6 +59,7 @@ variable "cf_org_id" {
   description = "The Cloud Foundry Org ID from the Cloud Foundry environment instance."
 }
 
+/* ---
 variable "cf_org_name" {
   type        = string
   description = "Name of the Cloud Foundry org."
@@ -63,6 +69,7 @@ variable "cf_org_name" {
     error_message = "The Cloud Foundry org name must not be emtpy and not exceed 255 characters."
   }
 }
+--- */
 
 variable "cf_space_name" {
   type        = string
@@ -75,9 +82,7 @@ variable "cf_space_name" {
   }
 }
 
-# ------------------------------------------------------------------------------------------------------
 # User lists
-# ------------------------------------------------------------------------------------------------------
 variable "cf_org_managers" {
   type        = list(string)
   description = "Defines the colleagues who are added to a CF org as administrators."
@@ -97,12 +102,3 @@ variable "cf_space_developers" {
   type        = list(string)
   description = "Defines the colleagues who are added to a CF space as space developer."
 }
-
-/*
-# The CF Org name from the Cloud Foundry environment instance
-variable "cf_org_name" {
-  type        = string
-  description = "The Cloud Foundry Org name from the Cloud Foundry environment instance."
-
-}
-*/

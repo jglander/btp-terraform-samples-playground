@@ -19,36 +19,28 @@ resource "btp_subaccount_trust_configuration" "default" {
 }
 
 # ------------------------------------------------------------------------------------------------------
-# Create the Cloud Foundry space
+# ENVIRONMENTS (plans, user lists and other vars)
 # ------------------------------------------------------------------------------------------------------
+# cloudfoundry (Cloud Foundry Environment)
+# ------------------------------------------------------------------------------------------------------
+#
+# Create space
 resource "cloudfoundry_space" "dev" {
   name = var.cf_space_name
   org  = var.cf_org_id
 }
 
-# ------------------------------------------------------------------------------------------------------
-# SETUP ALL SERVICES FOR CF USAGE
-# ------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------
-#  USERS AND ROLES
-# ------------------------------------------------------------------------------------------------------
-
 locals {
-  # Remove current user if issuer (idp) of logged in user is not same as used custom idp 
+  # origin_key is default (sap.ids) if issuer (idp) of logged in user is not custom_idp, otherwise calculated from custom_idp (<<tenant-id>>-platform)
+  custom_idp_tenant_id = var.custom_idp != "" ? element(split(".", var.custom_idp), 0) : ""
+  origin_key        = data.btp_whoami.me.issuer != var.custom_idp ? "sap.ids" : "${local.custom_idp_tenant_id}-platform"
+
+  # Remove logged in user (which was already added before when cf env was created) 
   cf_org_managers = setsubtract(toset(var.cf_org_managers), [data.btp_whoami.me.email])
   cf_org_users  = setsubtract(toset(var.cf_org_users), [data.btp_whoami.me.email])
-
-  cf_space_managers   = var.cf_space_managers
-  cf_space_developers = var.cf_space_developers
-
-  # origin_key is default (sap.ids) if issuer (idp) of logged in user is not same as used custom idp, otherwise calculated from custom.idp
-  custom_idp_tenant = var.custom_idp != "" ? element(split(".", var.custom_idp), 0) : ""
-  origin_key        = data.btp_whoami.me.issuer != var.custom_idp ? "sap.ids" : "${local.custom_idp_tenant}-platform"
 }
 
-# ------------------------------------------------------------------------------------------------------
 # cf_org_users: Assign organization_user role
-# ------------------------------------------------------------------------------------------------------
 resource "cloudfoundry_org_role" "organization_user" {
   for_each = toset(local.cf_org_users)
   username = each.value
@@ -57,9 +49,7 @@ resource "cloudfoundry_org_role" "organization_user" {
   origin   = local.origin_key
 }
 
-# ------------------------------------------------------------------------------------------------------
 # cf_org_managers: Assign organization_manager role
-# ------------------------------------------------------------------------------------------------------
 resource "cloudfoundry_org_role" "organization_manager" {
   for_each   = toset(local.cf_org_managers)
   username   = each.value
@@ -69,12 +59,9 @@ resource "cloudfoundry_org_role" "organization_manager" {
   depends_on = [cloudfoundry_org_role.organization_user]
 }
 
-# ------------------------------------------------------------------------------------------------------
 # cf_space_managers: Assign space_manager role
-# ------------------------------------------------------------------------------------------------------
-# Define Space Manager role
 resource "cloudfoundry_space_role" "space_manager" {
-  for_each   = toset(local.cf_space_managers)
+  for_each   = toset(var.cf_space_managers)
   username   = each.value
   type       = "space_manager"
   space      = cloudfoundry_space.dev.id
@@ -82,14 +69,13 @@ resource "cloudfoundry_space_role" "space_manager" {
   depends_on = [cloudfoundry_org_role.organization_manager]
 }
 
-# ------------------------------------------------------------------------------------------------------
 # cf_space_developers: Assign space_developer role
-# ------------------------------------------------------------------------------------------------------
 resource "cloudfoundry_space_role" "space_developer" {
-  for_each   = toset(local.cf_space_developers)
+  for_each   = toset(var.cf_space_developers)
   username   = each.value
   type       = "space_developer"
   space      = cloudfoundry_space.dev.id
   origin     = local.origin_key
   depends_on = [cloudfoundry_org_role.organization_manager]
 }
+

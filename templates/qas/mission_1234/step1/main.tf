@@ -315,7 +315,6 @@ resource "local_file" "output_vars_step1" {
 
       cf_api_url           = "${jsondecode(btp_subaccount_environment_instance.cloudfoundry.labels)["API Endpoint"]}"
       cf_org_id            = "${jsondecode(btp_subaccount_environment_instance.cloudfoundry.labels)["Org ID"]}"
-      cf_org_name          = "${jsondecode(btp_subaccount_environment_instance.cloudfoundry.labels)["Org Name"]}"
       cf_space_name        = "${var.cf_space_name}"
 
       cf_org_managers      = ${jsonencode(var.cf_org_managers)}
