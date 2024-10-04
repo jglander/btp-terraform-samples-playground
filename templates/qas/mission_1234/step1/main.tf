@@ -30,12 +30,19 @@ resource "btp_subaccount_trust_configuration" "fully_customized" {
   identity_provider = var.custom_idp
 }
 
+data "btp_whoami" "me" {}
+
+locals {
+  origin_key = data.btp_whoami.me.issuer != var.custom_idp ? "sap.default" : "${element(split(".", var.custom_idp), 0)}-platform"
+}
+
 # Assign role collection "Subaccount Administrator"
 resource "btp_subaccount_role_collection_assignment" "subaccount_admin" {
   for_each             = toset("${var.subaccount_admins}")
   subaccount_id        = data.btp_subaccount.dc_mission.id
   role_collection_name = "Subaccount Administrator"
   user_name            = each.value
+  origin               = local.origin_key
   depends_on           = [btp_subaccount.dc_mission]
 }
 
@@ -45,6 +52,7 @@ resource "btp_subaccount_role_collection_assignment" "subaccount_service_admin" 
   subaccount_id        = data.btp_subaccount.dc_mission.id
   role_collection_name = "Subaccount Service Administrator"
   user_name            = each.value
+  origin               = local.origin_key
   depends_on           = [btp_subaccount.dc_mission]
 }
 
