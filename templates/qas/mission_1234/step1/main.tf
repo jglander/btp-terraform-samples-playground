@@ -6,14 +6,16 @@ resource "random_uuid" "uuid" {}
 
 locals {
   random_uuid       = random_uuid.uuid.result
+  timestamp         = formatdate("YYYYMMDDhhmmss", timestamp())
   subaccount_domain = "dcmission1234${local.random_uuid}"
+  subaccount_name   = var.subaccount_name == "" ? "SAP Discovery Center Mission 1234 - ${local.timestamp}" : var.subaccount_name
 }
 
 # Creation of subaccount
 resource "btp_subaccount" "dc_mission" {
   count = var.subaccount_id == "" ? 1 : 0
 
-  name      = var.subaccount_name
+  name      = local.subaccount_name
   subdomain = local.subaccount_domain
   region    = var.region
 }
@@ -76,16 +78,19 @@ resource "terraform_data" "cf_landscape_label" {
   input = length(var.cf_landscape_label) > 0 ? var.cf_landscape_label : [for env in data.btp_subaccount_environments.all.values : env if env.service_name == "cloudfoundry" && env.environment_type == "cloudfoundry"][0].landscape_label
 }
 # Create instance
+locals {
+  cf_org_name   = var.cf_org_name == "" ? "cf_org_name_dcmission_1234_${local.random_uuid}" : var.cf_org_name
+}
 resource "btp_subaccount_environment_instance" "cloudfoundry" {
   subaccount_id    = data.btp_subaccount.dc_mission.id
-  name             = var.cf_org_name
+  name             = local.cf_org_name
   environment_type = "cloudfoundry"
   service_name     = local.service_env_name__cloudfoundry
   plan_name        = var.service_env_plan__cloudfoundry
   landscape_label  = terraform_data.cf_landscape_label.output
 
   parameters = jsonencode({
-    instance_name = var.cf_org_name
+    instance_name = local.cf_org_name
   })
 }
 
@@ -94,212 +99,93 @@ resource "btp_subaccount_environment_instance" "cloudfoundry" {
 # ------------------------------------------------------------------------------------------------------
 #
 locals {
-
-/* ---
-  service_name__connectivity    = "connectivity"
-  service_name__destination     = "destination"
-  service_name__html5_apps_repo = "html5-apps-repo"
-  service_name__xsuaa           = "xsuaa"
---- */
-
+  service_name__sap_analytics_cloud = "analytics-planning-osb"
 }
 
-/* ---
 # ------------------------------------------------------------------------------------------------------
-# Setup connectivity (Connectivity Service)
+# Setup SAP Analytics Cloud (not running in CF environment)
 # ------------------------------------------------------------------------------------------------------
-# Entitle
-resource "btp_subaccount_entitlement" "connectivity" {
+# Entitle 
+resource "btp_subaccount_entitlement" "sac" {
+  count         = var.is_service_setup_enabled__sac ? 1 : 0
   subaccount_id = data.btp_subaccount.dc_mission.id
-  service_name  = local.service_name__connectivity
-  plan_name     = var.service_plan__connectivity
+  service_name  = local.service_name__sap_analytics_cloud
+  plan_name     = var.service_plan__sap_analytics_cloud
 }
---- */
 
-/* ---
-# ------------------------------------------------------------------------------------------------------
-# Setup destination (Destination Service)
-# ------------------------------------------------------------------------------------------------------
-# Entitle
-resource "btp_subaccount_entitlement" "destination" {
+# Get serviceplan_id for data-analytics-osb with plan_name "standard"
+data "btp_subaccount_service_plan" "sac" {
+  count         = var.is_service_setup_enabled__sac ? 1 : 0
   subaccount_id = data.btp_subaccount.dc_mission.id
-  service_name  = local.service_name__destination
-  plan_name     = var.service_plan__destination
+  offering_name = local.service_name__sap_analytics_cloud
+  name          = var.service_plan__sap_analytics_cloud
+  depends_on    = [btp_subaccount_entitlement.sac]
 }
---- */
 
-/* ---
-# ------------------------------------------------------------------------------------------------------
-# Setup destination (HTML5 Application Repository Service)
-# ------------------------------------------------------------------------------------------------------
-# Entitle
-resource "btp_subaccount_entitlement" "html5_apps_repo" {
-  subaccount_id = data.btp_subaccount.dc_mission.id
-  service_name  = local.service_name__html5_apps_repo
-  plan_name     = var.service_plan__html5_apps_repo
+# Create service instance
+resource "btp_subaccount_service_instance" "sac" {
+  count         = var.is_service_setup_enabled__sac ? 1 : 0
+  subaccount_id  = data.btp_subaccount.dc_mission.id
+  serviceplan_id = data.btp_subaccount_service_plan.sac[0].id
+  name           = "sac_instance"
+  parameters = jsonencode(
+    {
+      "first_name" : "${var.sac_admin_first_name}",
+      "last_name" : "${var.sac_admin_last_name}",
+      "email" : "${var.sac_admin_email}",
+      "confirm_email" : "${var.sac_admin_email}",
+      "host_name" : "${var.sac_admin_host_name}",
+      "number_of_business_intelligence_licenses" : var.sac_number_of_business_intelligence_licenses,
+      "number_of_planning_professional_licenses" : var.sac_number_of_professional_licenses,
+      "number_of_planning_standard_licenses" : var.sac_number_of_business_standard_licenses
+    }
+  )
+  timeouts = {
+    create = "90m"
+    update = "90m"
+    delete = "90m"
+  }
 }
---- */
-
-/* ---
-# ------------------------------------------------------------------------------------------------------
-# Setup destination (Authorization and Trust Management Service)
-# ------------------------------------------------------------------------------------------------------
-# Entitle
-resource "btp_subaccount_entitlement" "xsuaa" {
-  subaccount_id = data.btp_subaccount.dc_mission.id
-  service_name  = local.service_name__xsuaa
-  plan_name     = var.service_plan__xsuaa
-}
---- */
 
 # ------------------------------------------------------------------------------------------------------
 # APP SUBSCRIPTIONS
 # ------------------------------------------------------------------------------------------------------
 #
 locals {
-
-/* ---
-  service_name__integrationsuite = "integrationsuite"
-  service_name__sapappstudio     = "sapappstudio"
---- */
-
+  # optional
+  app_subscription_serv_name__sap_launchpad = "SAPLaunchpad"
 }
-# ------------------------------------------------------------------------------------------------------
-# Setup integrationsuite (Integration Suite Service)
-# ------------------------------------------------------------------------------------------------------
 
-/* ---
+# ------------------------------------------------------------------------------------------------------
+# Setup SAPLaunchpad (SAP Build Work Zone, standard edition)
+# ------------------------------------------------------------------------------------------------------
 # Entitle
-resource "btp_subaccount_entitlement" "integrationsuite" {
-  subaccount_id = data.btp_subaccount.dc_mission.id
-  service_name  = local.service_name__integrationsuite
-  plan_name     = var.service_plan__integrationsuite
-  amount        = var.service_plan__integrationsuite == "free" ? 1 : null
-}
-
-data "btp_subaccount_subscriptions" "all" {
-  subaccount_id = data.btp_subaccount.dc_mission.id
-  depends_on    = [btp_subaccount_entitlement.integrationsuite]
+resource "btp_subaccount_entitlement" "sap_launchpad" {
+  count         = var.use_optional_resources && var.is_service_setup_enabled__sap_launchpad ? 1 : 0
+  subaccount_id = btp_subaccount.dc_mission[0].id
+  service_name  = local.app_subscription_serv_name__sap_launchpad
+  plan_name     = var.app_subscription_plan__sap_launchpad
+  amount        = var.app_subscription_plan__sap_launchpad == "free" ? 1 : null
 }
 
 # Subscribe
-resource "btp_subaccount_subscription" "integrationsuite" {
-  subaccount_id = data.btp_subaccount.dc_mission.id
-  app_name = [
-    for subscription in data.btp_subaccount_subscriptions.all.values :
-    subscription
-    if subscription.commercial_app_name == local.service_name__integrationsuite
-  ][0].app_name
-  plan_name  = var.service_plan__integrationsuite
-  depends_on = [data.btp_subaccount_subscriptions.all]
+resource "btp_subaccount_subscription" "sap_launchpad" {
+  count         = var.use_optional_resources && var.is_service_setup_enabled__sap_launchpad ? 1 : 0
+  subaccount_id = btp_subaccount.dc_mission[0].id
+  app_name      = local.app_subscription_serv_name__sap_launchpad
+  plan_name     = var.app_subscription_plan__sap_launchpad
+  depends_on    = [btp_subaccount_entitlement.sap_launchpad]
 }
---- */
 
-/* ---
-# ------------------------------------------------------------------------------------------------------
-# Setup sapappstudio (SAP Business Application Studio)
-# ------------------------------------------------------------------------------------------------------
-# Entitle
-resource "btp_subaccount_entitlement" "sapappstudio" {
-  subaccount_id = data.btp_subaccount.dc_mission.id
-  service_name  = local.service_name__sapappstudio
-  plan_name     = var.service_plan__sapappstudio
-}
-# Subscribe
-resource "btp_subaccount_subscription" "sapappstudio" {
-  subaccount_id = data.btp_subaccount.dc_mission.id
-  app_name      = local.service_name__sapappstudio
-  plan_name     = var.service_plan__sapappstudio
-  depends_on    = [btp_subaccount_entitlement.sapappstudio]
-}
---- */
-
-# ------------------------------------------------------------------------------------------------------
-#  USERS AND ROLES
-# ------------------------------------------------------------------------------------------------------
-#
-
-/* ---
-data "btp_whoami" "me" {}
-locals {
-  integration_provisioners = var.integration_provisioners
-  sapappstudio_admins      = var.sapappstudio_admins
-  sapappstudio_developers  = var.sapappstudio_developers
-
-  cloud_connector_admins          = var.cloud_connector_admins
-  connectivity_destination_admins = var.connectivity_destination_admins
-
-  custom_idp_tenant = var.custom_idp != "" ? element(split(".", var.custom_idp), 0) : ""
-  origin_key        = local.custom_idp_tenant != "" ? "${local.custom_idp_tenant}-platform" : ""
-}
---- */
-
-/* ---
-# ------------------------------------------------------------------------------------------------------
-# Assign role collection "Integration_Provisioner"
-# ------------------------------------------------------------------------------------------------------
-resource "btp_subaccount_role_collection_assignment" "integration_provisioner" {
-  for_each             = toset("${local.integration_provisioners}")
-  subaccount_id        = data.btp_subaccount.dc_mission.id
-  role_collection_name = "Integration_Provisioner"
+# Assign role collection "Launchpad_Admin"
+resource "btp_subaccount_role_collection_assignment" "launchpad_admin" {
+  for_each             = toset(var.use_optional_resources == true && var.is_service_setup_enabled__sap_launchpad == true ? var.launchpad_admins : [])
+  subaccount_id        = btp_subaccount.dc_mission[0].id
+  role_collection_name = "Launchpad_Admin"
   user_name            = each.value
-  origin               = var.custom_idp_apps_origin_key
-  depends_on           = [btp_subaccount_subscription.integrationsuite]
+  origin               = local.origin_key
+  depends_on           = [btp_subaccount_subscription.sap_launchpad]
 }
-
-# Assign logged in user to the role collection "Integration_Provisioner" if not custom idp user
-resource "btp_subaccount_role_collection_assignment" "integration_provisioner_default" {
-  count                = data.btp_whoami.me.issuer != var.custom_idp ? 1 : 0
-  subaccount_id        = data.btp_subaccount.dc_mission.id
-  role_collection_name = "Integration_Provisioner"
-  user_name            = data.btp_whoami.me.email
-  origin               = "sap.default"
-  depends_on           = [btp_subaccount_subscription.integrationsuite]
-}
---- */
-
-/* ---
-# ------------------------------------------------------------------------------------------------------
-# Assign role collection "Business_Application_Studio_Administrator"
-# ------------------------------------------------------------------------------------------------------
-resource "btp_subaccount_role_collection_assignment" "bas_admins" {
-  for_each             = toset(local.sapappstudio_admins)
-  subaccount_id        = data.btp_subaccount.dc_mission.id
-  role_collection_name = "Business_Application_Studio_Administrator"
-  user_name            = each.value
-  depends_on           = [btp_subaccount_subscription.sapappstudio]
-}
-
-# ------------------------------------------------------------------------------------------------------
-# Assign role collection "Business_Application_Studio_Developer"
-# ------------------------------------------------------------------------------------------------------
-resource "btp_subaccount_role_collection_assignment" "bas_developer" {
-  for_each             = toset(local.sapappstudio_developers)
-  subaccount_id        = data.btp_subaccount.dc_mission.id
-  role_collection_name = "Business_Application_Studio_Developer"
-  user_name            = each.value
-  depends_on           = [btp_subaccount_subscription.sapappstudio]
-}
---- */
-
-
-/* ---
-resource "btp_subaccount_role_collection_assignment" "cloud_connector_admins" {
-  for_each             = toset(local.cloud_connector_admins)
-  subaccount_id        = data.btp_subaccount.dc_mission.id
-  role_collection_name = "Cloud Connector Administrator"
-  user_name            = each.value
-  depends_on           = [btp_subaccount_entitlement.connectivity]
-}
-
-resource "btp_subaccount_role_collection_assignment" "connectivity_destination_admins" {
-  for_each             = toset(local.connectivity_destination_admins)
-  subaccount_id        = data.btp_subaccount.dc_mission.id
-  role_collection_name = "Connectivity and Destination Administrator"
-  user_name            = each.value
-  depends_on           = [btp_subaccount_entitlement.destination]
-}
---- */
 
 # ------------------------------------------------------------------------------------------------------
 # Create tfvars file for step 2 (if variable `create_tfvars_file_for_step2` is set to true)

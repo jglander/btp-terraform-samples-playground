@@ -1,28 +1,27 @@
+# ------------------------------------------------------------------------------------------------------
+# account
+# ------------------------------------------------------------------------------------------------------
 output "subaccount_id" {
   value       = data.btp_subaccount.dc_mission.id
   description = "The ID of the subaccount."
 }
-
-/* ---
-output "integrationsuite_subscription_url" {
-  value       = btp_subaccount_subscription.integrationsuite.subscription_url
-  description = "SAP Integration Suite subscription URL."
-}
---- */
 
 output "custom_idp" {
   value       = var.custom_idp
   description = "The custom identity provider."
 }
 
-output "cf_api_url" {
-  value       = jsondecode(btp_subaccount_environment_instance.cloudfoundry.labels)["API Endpoint"]
-  description = "The Cloudfoundry API Url."
-}
-
+# ------------------------------------------------------------------------------------------------------
+# environments
+# ------------------------------------------------------------------------------------------------------
 output "cf_landscape_label" {
   value       = btp_subaccount_environment_instance.cloudfoundry.landscape_label
   description = "The Cloudfoundry landscape label."
+}
+
+output "cf_api_url" {
+  value       = jsondecode(btp_subaccount_environment_instance.cloudfoundry.labels)["API Endpoint"]
+  description = "The Cloudfoundry API Url."
 }
 
 output "cf_org_id" {
@@ -55,9 +54,10 @@ output "cf_space_managers" {
   description = "List of users to set as Cloudfoundry space managers."
 }
 
-/* ---
-output "origin" {
-  value       = var.origin
-  description = "The identity provider for the UAA user."
+# ------------------------------------------------------------------------------------------------------
+# services dashboard & application subscription urls
+# ------------------------------------------------------------------------------------------------------
+output "sap_launchpad_apps_subscription_url" {
+  value       = var.use_optional_resources && var.is_service_setup_enabled__sap_launchpad ? btp_subaccount_subscription.sap_launchpad[0].subscription_url : null
+  description = "The URL of the subscribed SAP Build Work Zone, standard edition application"
 }
---- */

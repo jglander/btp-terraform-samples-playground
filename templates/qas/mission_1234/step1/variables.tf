@@ -27,6 +27,7 @@ variable "region" {
 variable "subaccount_name" {
   type        = string
   description = "The subaccount name."
+  default     = ""
 }
 
 variable "subaccount_id" {
@@ -61,7 +62,7 @@ variable "create_tfvars_file_for_step2" {
 variable "use_optional_resources" {
   type        = bool
   description = "optional resources are ignored if value is false"
-  default     = false
+  default     = true
 }
 
 # ------------------------------------------------------------------------------------------------------
@@ -111,11 +112,7 @@ variable "cf_landscape_label" {
 variable "cf_org_name" {
   type        = string
   description = "Name of the Cloud Foundry org."
-
-  validation {
-    condition     = can(regex("^.{1,255}$", var.cf_org_name))
-    error_message = "The Cloud Foundry org name must not be emtpy and not exceed 255 characters."
-  }
+  default     = ""
 }
 
 variable "cf_space_name" {
@@ -128,4 +125,99 @@ variable "cf_space_name" {
     error_message = "The Cloud Foundry space name must not be emtpy and not exceed 255 characters."
   }
 }
+
+# ------------------------------------------------------------------------------------------------------
+# SERVICES (plans and other parameters)
+# ------------------------------------------------------------------------------------------------------
+# analytics-planning-osb (SAP Analytics Cloud)
+# ------------------------------------------------------------------------------------------------------
+# plans
+variable "service_plan__sap_analytics_cloud" {
+  type        = string
+  description = "The plan for service 'SAP Analytics Cloud' with technical name 'analytics-planning-osb'"
+  default     = "free"
+  validation {
+    condition     = contains(["free", "production"], var.service_plan__sap_analytics_cloud)
+    error_message = "Invalid value for service_plan__sap_analytics_cloud. Only 'free' and 'production' are allowed."
+  }
+}
+
+# sap analytics cloud (sac) instance parameters
+variable "sac_admin_email" {
+  type        = string
+  description = "SAC Admin Email"
+}
+
+variable "sac_admin_first_name" {
+  type        = string
+  description = "SAC Admin First Name"
+  default     = "first name"
+}
+
+variable "sac_admin_last_name" {
+  type        = string
+  description = "SAC Admin Last Name"
+  default     = "last name"
+}
+
+variable "sac_admin_host_name" {
+  type        = string
+  description = "SAC Admin Host Name"
+  default     = ""
+}
+
+variable "sac_number_of_business_intelligence_licenses" {
+  type        = number
+  description = "Number of business intelligence licenses"
+  default     = 25
+}
+
+variable "sac_number_of_professional_licenses" {
+  type        = number
+  description = "Number of business professional licenses"
+  default     = 1
+}
+
+variable "sac_number_of_business_standard_licenses" {
+  type        = number
+  description = "Number of business standard licenses"
+  default     = 10
+}
+
+# testing
+variable "is_service_setup_enabled__sac" {
+  type        = bool
+  description = "If true setup of app subscription 'SAP Analytics Cloud' with technical name 'analytics-planning-osb' is enabled"
+  default     = false
+}
+
+# ------------------------------------------------------------------------------------------------------
+# APP SUBSCRIPTIONS (plans and user lists)
+# ------------------------------------------------------------------------------------------------------
+# SAPLaunchpad (SAP Build Work Zone, standard edition)
+# ------------------------------------------------------------------------------------------------------
+# plans
+variable "app_subscription_plan__sap_launchpad" {
+  type        = string
+  description = "The plan for app subscription 'SAP Build Work Zone, standard edition' with technical name 'SAPLaunchpad'"
+  default     = "free"
+  validation {
+    condition     = contains(["free", "standard"], var.app_subscription_plan__sap_launchpad)
+    error_message = "Invalid value for app_subscription_plan__sap_launchpad. Only 'free' and 'standard' are allowed."
+  }
+}
+
+# user lists
+variable "launchpad_admins" {
+  type        = list(string)
+  description = "Defines the colleagues who are Launchpad Admins."
+}
+
+# testing
+variable "is_service_setup_enabled__sap_launchpad" {
+  type        = bool
+  description = "If true setup of app subscription 'SAP Build Work Zone, standard edition' with technical name 'SAPLaunchpad' is enabled"
+  default     = false
+}
+
 
