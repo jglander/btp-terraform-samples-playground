@@ -61,3 +61,8 @@ output "sap_launchpad_apps_subscription_url" {
   value       = var.enable_app_subscription_setup__sap_launchpad ? btp_subaccount_subscription.sap_launchpad[0].subscription_url : null
   description = "The URL of the subscribed SAP Build Work Zone, standard edition application"
 }
+
+output "hana_cloud_tools_apps_subscription_url" {
+  value       = var.enable_app_subscription_setup__hana_cloud_tools ? btp_subaccount_subscription.hana_cloud_tools[0].subscription_url : null
+  description = "The URL of the subscribed SAP HANA Cloud application"
+}
