@@ -10,7 +10,7 @@ output "custom_idp" {
   value       = var.custom_idp
   description = "The custom identity provider."
 }
-
+/*
 # ------------------------------------------------------------------------------------------------------
 # environments
 # ------------------------------------------------------------------------------------------------------
@@ -53,3 +53,4 @@ output "cf_space_managers" {
   value       = var.cf_space_managers
   description = "List of users to set as Cloudfoundry space managers."
 }
+*/
