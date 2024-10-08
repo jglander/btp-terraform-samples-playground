@@ -57,7 +57,7 @@ resource "btp_subaccount_role_collection_assignment" "subaccount_service_admin" 
   origin               = local.origin_key
   depends_on           = [btp_subaccount.dc_mission]
 }
-/*
+
 # ------------------------------------------------------------------------------------------------------
 # ENVIRONMENTS
 # ------------------------------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ resource "btp_subaccount_entitlement" "cloudfoundry" {
   subaccount_id = btp_subaccount.dc_mission[0].id
   service_name  = local.service_env_name__cloudfoundry
   plan_name     = var.service_env_plan__cloudfoundry
-  amount        = 1
+  amount        = var.service_env_plan__cloudfoundry == "free" ? 1 : 0
 }
 
 # Fetch all available environments for the subaccount
@@ -105,4 +105,3 @@ resource "btp_subaccount_environment_instance" "cloudfoundry" {
   })
   depends_on    = [btp_subaccount_entitlement.cloudfoundry]
 }
-*/
