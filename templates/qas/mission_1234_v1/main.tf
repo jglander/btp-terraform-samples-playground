@@ -57,7 +57,7 @@ resource "btp_subaccount_role_collection_assignment" "subaccount_service_admin" 
   origin               = local.origin_key
   depends_on           = [btp_subaccount.dc_mission]
 }
-
+/*
 # ------------------------------------------------------------------------------------------------------
 # ENVIRONMENTS
 # ------------------------------------------------------------------------------------------------------
@@ -105,3 +105,4 @@ resource "btp_subaccount_environment_instance" "cloudfoundry" {
   })
   depends_on    = [btp_subaccount_entitlement.cloudfoundry]
 }
+*/
