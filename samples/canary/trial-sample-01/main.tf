@@ -50,6 +50,7 @@ data "btp_subaccount_service_plan" "by_name" {
   subaccount_id = data.btp_subaccount.dc_mission.id
   name          = var.service_plan__alert_notification
   offering_name = local.service_name__alert_notification
+  depends_on    = [btp_subaccount_entitlement.alert_notification]
 }
 
 # Create alert notification for Visual Cloud Functions

@@ -11,7 +11,8 @@ cli_server_url  = "https://canary.cli.btp.int.sap/"
 
 # user jglsap (canary)
 globalaccount  = "922102d4trial-ga"
-subaccount_id   = "7f5b0692-8720-426d-94d3-8a2c85495f9e" // trial default
+#subaccount_id   = "7f5b0692-8720-426d-94d3-8a2c85495f9e" // trial default
+subaccount_id   = "6d50f559-19ab-44a5-8c27-db72497e03f1" // mytrial2
 
 # user jglvod canary
 #globalaccount  = "f6c5026btrial-ga" // jglvod canary
@@ -23,4 +24,4 @@ subaccount_id   = "7f5b0692-8720-426d-94d3-8a2c85495f9e" // trial default
 # ------------------------------------------------------------------------------------------------------
 subaccount_admins             = ["jane.doe@acme.com"]
 
-use_optional_resources = false // default false
+use_optional_resources = true // default false
