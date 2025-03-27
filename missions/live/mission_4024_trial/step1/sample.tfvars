@@ -1,23 +1,25 @@
 # ------------------------------------------------------------------------------------------------------
-# Provider configuration
-# ------------------------------------------------------------------------------------------------------
-custom_idp = "<<tenant-id>>.accounts.ondemand.com"
-
-# ------------------------------------------------------------------------------------------------------
 # Account settings
 # ------------------------------------------------------------------------------------------------------
-globalaccount   = "your-globalaccount-subdomain"
-region          = "us10"
+# Your global account subdomain
+#globalaccount = "<your-globalaccount-subdomain>" // <xxxxxxxx>trial-ga
+#globalaccount = "0a206e29trial-ga" // jgl-sap
+globalaccount = "2e243346trial-ga" // jgl-vod
+
+# Region for your trial subaccount
+region = "us10"
+
+#subaccount_id = "<your trial Subaccount ID>"
+#subaccount_id = "60930557-ac56-4bd8-bde2-1ec35e65d4c5" // jgl-sap
+subaccount_id = "ca7d9286-b034-4137-b37b-60a79dc22d34" // jgl-vod
 
 # ------------------------------------------------------------------------------------------------------
-# Use case specific configuration
+# Use case specific role assignments
 # ------------------------------------------------------------------------------------------------------
-subaccount_admins               = ["jane.doe@test.com"]
-launchpad_admins                = ["jane.doe@test.com"]
-build_apps_admins               = ["jane.doe@test.com", "john.doe@test.com"]
-build_apps_developers           = ["jane.doe@test.com", "john.doe@test.com"]
-build_apps_registry_admin       = ["jane.doe@test.com", "john.doe@test.com"]
-build_apps_registry_developer   = ["jane.doe@test.com", "john.doe@test.com"]
+subaccount_admins             = ["jens.glander@vodafone.de"]
+
+build_apps_admins             = ["jens.glander@vodafone.de"]
+build_apps_developers         = ["jens.glander@vodafone.de"]
 
 # ------------------------------------------------------------------------------------------------------
 # Create tfvars file for the step 2

@@ -19,3 +19,16 @@ variable "custom_idp" {
   description = "Defines the custom IDP to be used for the subaccount"
   default     = ""
 }
+
+# ------------------------------------------------------------------------------------------------------
+# User lists
+# ------------------------------------------------------------------------------------------------------
+variable "build_apps_admins" {
+  type        = list(string)
+  description = "Defines the users who have the role of 'BuildAppsAdmin' in SAP Build Apps."
+}
+
+variable "build_apps_developers" {
+  type        = list(string)
+  description = "Defines the users who have the role of 'BuildAppsDeveloper' in SAP Build Apps."
+}

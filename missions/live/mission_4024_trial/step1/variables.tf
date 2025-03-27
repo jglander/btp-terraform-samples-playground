@@ -1,3 +1,8 @@
+variable "origin" {
+  type        = string
+  description = "temporary test"
+  default     = ""
+}
 # ------------------------------------------------------------------------------------------------------
 # Account variables
 # ------------------------------------------------------------------------------------------------------
@@ -85,23 +90,6 @@ variable "service_plan__sap_identity_services_onboarding" {
 variable "subaccount_admins" {
   type        = list(string)
   description = "Defines the users who are added to subaccount as administrators."
-
-  # add validation to check if admins contains a list of valid email addresses
-  validation {
-    condition     = length([for email in var.subaccount_admins : can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", email))]) == length(var.subaccount_admins)
-    error_message = "Please enter a valid email address for the subaccount admins."
-  }
-}
-
-variable "launchpad_admins" {
-  type        = list(string)
-  description = "Defines the users who have the role of 'Launchpad_Admin'."
-
-  # add validation to check if admins contains a list of valid email addresses
-  validation {
-    condition     = length([for email in var.launchpad_admins : can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", email))]) == length(var.launchpad_admins)
-    error_message = "Please enter a valid email address for the launchpad admins."
-  }
 }
 
 variable "build_apps_admins" {
@@ -112,16 +100,6 @@ variable "build_apps_admins" {
 variable "build_apps_developers" {
   type        = list(string)
   description = "Defines the users who have the role of 'BuildAppsDeveloper' in SAP Build Apps."
-}
-
-variable "build_apps_registry_admin" {
-  type        = list(string)
-  description = "Defines the users who have the role of 'RegistryAdmin' in SAP Build Apps."
-}
-
-variable "build_apps_registry_developer" {
-  type        = list(string)
-  description = "Defines the users who have the role of RegistryDeveloper' in SAP Build Apps."
 }
 
 # ------------------------------------------------------------------------------------------------------
