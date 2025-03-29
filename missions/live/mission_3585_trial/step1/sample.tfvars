@@ -3,14 +3,15 @@
 # ------------------------------------------------------------------------------------------------------
 # Your global account subdomain
 #globalaccount = "<your-globalaccount-subdomain>" // <xxxxxxxx>trial-ga
-globalaccount = "590ab864trial-ga" // jgl-vod trial
+#globalaccount = "0a206e29trial-ga" // jgl-sap
+globalaccount = "2e243346trial-ga" // jgl-vod
 
 # Region for your trial subaccount
 region = "us10"
 
-# Name of your sub account
 #subaccount_id = "<your trial Subaccount ID>"
-subaccount_id = "ed178fd3-8979-4bac-8a22-dc6beeb00faf" // jgl-vod trial
+#subaccount_id = "60930557-ac56-4bd8-bde2-1ec35e65d4c5" // jgl-sap
+subaccount_id = "ca7d9286-b034-4137-b37b-60a79dc22d34" // jgl-vod
 
 # ------------------------------------------------------------------------------------------------------
 # USER ROLES
@@ -21,3 +22,7 @@ subaccount_id = "ed178fd3-8979-4bac-8a22-dc6beeb00faf" // jgl-vod trial
 subaccount_admins   = ["jens.glander@vodafone.de"]
 launchpad_admins    = ["another.user@test.com", "jens.glander@vodafone.de"]
 
+# ------------------------------------------------------------------------------------------------------
+# Create tfvars file for the step 2
+# ------------------------------------------------------------------------------------------------------
+create_tfvars_file_for_step2 = true

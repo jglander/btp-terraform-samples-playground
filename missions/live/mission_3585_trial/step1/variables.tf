@@ -15,7 +15,7 @@ variable "cli_server_url" {
 variable "custom_idp" {
   type        = string
   description = "The custom identity provider for the subaccount."
-  default     = "sap.ids"
+  default     = ""
 }
 
 variable "region" {
@@ -36,9 +36,21 @@ variable "subaccount_id" {
   default     = ""
 }
 
+# ------------------------------------------------------------------------------------------------------
+# services plans
+# ------------------------------------------------------------------------------------------------------
+variable "service_plan__sap_identity_services_onboarding" {
+  type        = string
+  description = "The plan for service 'Cloud Identity Services' with technical name 'sap-identity-services-onboarding'"
+  default     = "default"
+  validation {
+    condition     = contains(["default"], var.service_plan__sap_identity_services_onboarding)
+    error_message = "Invalid value for service_plan__sap_identity_services_onboarding. Only 'default' is allowed."
+  }
+}
 
 # ------------------------------------------------------------------------------------------------------
-# app subscription plans
+# app subscriptions plans
 # ------------------------------------------------------------------------------------------------------
 variable "service_plan__sap_launchpad" {
   type        = string
@@ -56,21 +68,18 @@ variable "service_plan__sap_launchpad" {
 variable "subaccount_admins" {
   type        = list(string)
   description = "Defines the colleagues who are added to each subaccount as emergency administrators."
-
-  # add validation to check if admins contains a list of valid email addresses
-  validation {
-    condition     = length([for email in var.subaccount_admins : can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", email))]) == length(var.subaccount_admins)
-    error_message = "Please enter a valid email address for the subaccount admins."
-  }
 }
 
 variable "launchpad_admins" {
   type        = list(string)
   description = "Defines the colleagues who are Launchpad Admins."
+}
 
-  # add validation to check if admins contains a list of valid email addresses
-  validation {
-    condition     = length([for email in var.launchpad_admins : can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", email))]) == length(var.launchpad_admins)
-    error_message = "Please enter a valid email address."
-  }
+# ------------------------------------------------------------------------------------------------------
+# Switch for creating tfvars for step 2
+# ------------------------------------------------------------------------------------------------------
+variable "create_tfvars_file_for_step2" {
+  type        = bool
+  description = "Switch to enable the creation of the tfvars file for step 2."
+  default     = false
 }

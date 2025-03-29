@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------------------------------
-# Subaccount setup for DC mission 3585
+# Subaccount setup for DC mission 3585_trial
 # ------------------------------------------------------------------------------------------------------
 # Setup subaccount domain (to ensure uniqueness in BTP global account)
 resource "random_uuid" "uuid" {}
@@ -21,6 +21,35 @@ data "btp_subaccount" "dc_mission" {
 # ------------------------------------------------------------------------------------------------------
 # SERVICES
 # ------------------------------------------------------------------------------------------------------
+locals {
+  # optional, if custom idp is used
+  service_name__sap_identity_services_onboarding  = "sap-identity-services-onboarding"
+}
+
+# ------------------------------------------------------------------------------------------------------
+# Setup sap-identity-services-onboarding (Cloud Identity Services)
+# ------------------------------------------------------------------------------------------------------
+# Entitle
+resource "btp_subaccount_entitlement" "sap_identity_services_onboarding" {
+  count         = var.custom_idp == "" ? 1 : 0
+
+  subaccount_id = data.btp_subaccount.dc_mission.id
+  service_name  = local.service_name__sap_identity_services_onboarding
+  plan_name     = var.service_plan__sap_identity_services_onboarding
+}
+# Subscribe
+resource "btp_subaccount_subscription" "sap_identity_services_onboarding" {
+  count = var.custom_idp == "" ? 1 : 0
+
+  subaccount_id = data.btp_subaccount.dc_mission.id
+  app_name      = local.service_name__sap_identity_services_onboarding
+  plan_name     = var.service_plan__sap_identity_services_onboarding
+}
+# IdP trust configuration
+resource "btp_subaccount_trust_configuration" "fully_customized" {
+  subaccount_id     = data.btp_subaccount.dc_mission.id
+  identity_provider = var.custom_idp != "" ? var.custom_idp : element(split("/", btp_subaccount_subscription.sap_identity_services_onboarding[0].subscription_url), 2)
+}
 
 # ------------------------------------------------------------------------------------------------------
 # APP SUBSCRIPTIONS
@@ -37,20 +66,6 @@ resource "btp_subaccount_entitlement" "sap_launchpad" {
   subaccount_id = data.btp_subaccount.dc_mission.id
   service_name  = local.service_name__sap_launchpad
   plan_name     = var.service_plan__sap_launchpad
-  amount        = var.service_plan__sap_launchpad == "free" ? 1 : null
-}
-# Subscribe
-resource "btp_subaccount_subscription" "sap_launchpad" {
-  subaccount_id = data.btp_subaccount.dc_mission.id
-  app_name      = local.service_name__sap_launchpad
-  plan_name     = var.service_plan__sap_launchpad
-  depends_on    = [btp_subaccount_entitlement.sap_launchpad]
-}
-data "btp_subaccount_subscription" "sap_launchpad" {
-  subaccount_id = data.btp_subaccount.dc_mission.id
-  app_name      = local.service_name__sap_launchpad
-  plan_name     = var.service_plan__sap_launchpad
-  depends_on    = [btp_subaccount_subscription.sap_launchpad]
 }
 
 # ------------------------------------------------------------------------------------------------------
@@ -69,12 +84,19 @@ resource "btp_subaccount_role_collection_assignment" "subaccount_admin" {
 }
 
 # ------------------------------------------------------------------------------------------------------
-# Assign role collection "Launchpad_Admin"
+# Create tfvars file for step 2 (if variable `create_tfvars_file_for_step2` is set to true)
 # ------------------------------------------------------------------------------------------------------
-resource "btp_subaccount_role_collection_assignment" "launchpad_admin" {
-  for_each             = toset("${var.launchpad_admins}")
-  subaccount_id        = data.btp_subaccount.dc_mission.id
-  role_collection_name = "Launchpad_Admin"
-  user_name            = each.value
-  depends_on           = [btp_subaccount_subscription.sap_launchpad]
+resource "local_file" "output_vars_step1" {
+  count    = var.create_tfvars_file_for_step2 ? 1 : 0
+  content  = <<-EOT
+      globalaccount        = "${var.globalaccount}"
+      cli_server_url       = ${jsonencode(var.cli_server_url)}
+      custom_idp           = "${var.custom_idp}"
+
+      subaccount_id        = "${data.btp_subaccount.dc_mission.id}"
+
+      launchpad_admins     = ${jsonencode(var.launchpad_admins)}
+
+      EOT
+  filename = "../step2/terraform.tfvars"
 }
