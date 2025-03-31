@@ -89,6 +89,7 @@ resource "local_file" "output_vars_step1" {
   content  = <<-EOT
       globalaccount        = "${var.globalaccount}"
       cli_server_url       = ${jsonencode(var.cli_server_url)}
+      subaccount_id        = "${data.btp_subaccount.dc_mission.id}"
 
       cf_api_url          = "${jsondecode(local.cf_environment_instance.labels)["API Endpoint"]}"
       cf_org_id           = "${local.cf_environment_instance.platform_id}"
