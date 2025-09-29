@@ -8,7 +8,7 @@ variable "subaccount_name" {
   description = "The subaccount name."
   default     = "My test subaccount"
 }
- 
+
 variable "cli_server_url" {
   type        = string
   description = "The BTP CLI server URL."
@@ -29,10 +29,18 @@ variable "region" {
 variable "cf_org_name" {
   type        = string
   description = "Name of the Cloud Foundry org."
-  default     = "qas sample - cf_multi_step"
 
   validation {
     condition     = can(regex("^.{1,255}$", var.cf_org_name))
     error_message = "The Cloud Foundry org name must not be empty and not exceed 255 characters."
   }
+}
+
+# ------------------------------------------------------------------------------------------------------
+# Switch for creating tfvars for step 2
+# ------------------------------------------------------------------------------------------------------
+variable "create_tfvars_file_for_step2" {
+  type        = bool
+  description = "Switch to enable the creation of the tfvars file for step 2."
+  default     = false
 }

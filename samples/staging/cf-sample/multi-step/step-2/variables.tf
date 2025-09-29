@@ -8,11 +8,11 @@ variable "cli_server_url" {
   description = "The BTP CLI server URL."
   default     = "https://cpcli.cf.eu10.hana.ondemand.com"
 }
-
+/*
 variable "custom_idp_origin" {
     type = string
 }
-
+*/
 variable "cf_api_url" {
     type = string
 }
@@ -39,3 +39,4 @@ variable "cf_space_name" {
     error_message = "The Cloud Foundry space name must not be emtpy and not exceed 255 characters."
   }
 }
+

@@ -19,6 +19,10 @@ resource "btp_subaccount" "project" {
   usage = "USED_FOR_PRODUCTION"
 }
 
+data "btp_subaccount" "project" {
+  id = btp_subaccount.project.id
+}
+
 ######################################################################
 # Get all available environments for the subaccount
 ######################################################################
@@ -54,4 +58,25 @@ resource "btp_subaccount_environment_instance" "cloudfoundry" {
   parameters = jsonencode({
     instance_name = var.cf_org_name
   })
+}
+
+# ------------------------------------------------------------------------------------------------------
+# Create tfvars file for step 2 (if variable `create_tfvars_file_for_step2` is set to true)
+# ------------------------------------------------------------------------------------------------------
+resource "local_file" "output_vars_step1" {
+  count    = var.create_tfvars_file_for_step2 ? 1 : 0
+  content  = <<-EOT
+      globalaccount        = "${var.globalaccount}"
+      cli_server_url       = ${jsonencode(var.cli_server_url)}
+
+      subaccount_id        = "${data.btp_subaccount.project.id}"
+
+      cf_api_url           = "${jsondecode(btp_subaccount_environment_instance.cloudfoundry.labels)["API Endpoint"]}"
+
+      cf_org_id            = "${jsondecode(btp_subaccount_environment_instance.cloudfoundry.labels)["Org ID"]}"
+
+      cf_landscape_label   = "${local.cf_landscape_labels[0]}"
+
+      EOT
+  filename = "../step-2/terraform.tfvars"
 }

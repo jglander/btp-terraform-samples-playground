@@ -1,8 +1,8 @@
 terraform {
   required_providers {
     cloudfoundry = {
-      source  = "SAP/cloudfoundry"
-      version = "0.2.1-beta"
+      source  = "cloudfoundry/cloudfoundry"
+      version = "1.9.0"
     }
   }
 }
