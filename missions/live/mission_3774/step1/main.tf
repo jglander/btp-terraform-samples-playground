@@ -93,7 +93,7 @@ resource "btp_subaccount_entitlement" "build_workzone" {
 # Create app subscription to SAP Build Workzone, standard edition (depends on entitlement)
 resource "btp_subaccount_subscription" "build_workzone" {
   subaccount_id = btp_subaccount.dc_mission.id
-  app_name      = local.service_name__build_workzone
+  app_name      = "SAPLaunchpadSMS"
   plan_name     = var.service_plan__build_workzone
   depends_on    = [btp_subaccount_entitlement.build_workzone]
 }

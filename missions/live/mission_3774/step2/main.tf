@@ -64,15 +64,17 @@ resource "cloudfoundry_space_role" "space_developers" {
 # ------------------------------------------------------------------------------------------------------
 # Create service instance for taskcenter (one-inbox-service)
 # ------------------------------------------------------------------------------------------------------
-data "cloudfoundry_service" "srvc_taskcenter" {
-  name = "one-inbox-service"
+
+data "cloudfoundry_service_plan" "srvc_taskcenter" {
+  service_offering_name = "one-inbox-service"
+  name = "standard"
 }
 
 resource "cloudfoundry_service_instance" "si_taskcenter" {
   name         = "sap-taskcenter"
   type         = "managed"
   space        = cloudfoundry_space.space.id
-  service_plan = data.cloudfoundry_service.srvc_taskcenter.service_plans["standard"]
+  service_plan = data.cloudfoundry_service_plan.srvc_taskcenter.id
   parameters = jsonencode({
     "authorities" : [],
     "defaultCollectionQueryFilter" : "own"
